@@ -17,13 +17,10 @@ int main(int argc, char *argv[])
         base = malloc(num * size);
 
         for (i = 0; i < num; i++) {
-            //printf("%d\n", i);
             elem = atoi(argv[i + 2]);
             cpy(((char *)base + i * size), &elem, size);
-            //* (int *) ((char *)base + i * size) = atoi(argv[i + 2]);
         }
 
-        //printf("\n\n\n");
         mergesort(base, num, size, * intcmp);
 
         for (i = 0; i < num; i++) {
@@ -41,11 +38,21 @@ int main(int argc, char *argv[])
         }
 
         mergesort(base, num, size, * chrcmp);
+
         for (i = 0; i < num; i++) {
             printf("%c ", * ((char *)base + i * size));
         }
         printf("\n");
         free(base);
+
+        //mergesort(argv[2], num, size, * chrcmp);
+        //for (i = 0; i < num; i++) {
+        //    printf("%c ", * argv[i + 2]);
+        //}
+        //printf("\n");
+
+        //printf("%c\n", **(argv + 4) );
+
     }
     else if (strcmp(argv[1], "str") == 0) {
         // PANIC!
