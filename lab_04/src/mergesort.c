@@ -1,10 +1,13 @@
 #include <stdlib.h>
 #include <stddef.h>
+#include <stdio.h>
 
 void cpy (void * a, void * b, size_t size) {
     int q;
+    char * ap = (char *)a;
+    char * bp = (char *)b;
     for (q = 0; q < size; q++) {
-        * ((char *) a + q) = * ((char *) b + q);
+        * (ap + q) = * (bp + q);
     }
 }
 
@@ -18,6 +21,15 @@ int mergesort (void* base, size_t num, size_t size, int (*compar)(const char*, c
 
     void * temp = malloc(num * size);
 
+    // print first two numbers
+    //printf("%d %d\n", * (int *)((char *)base), * (int *)((char *)base + size));
+
+
+    // test intcmp
+    //int qq = 2; int ww = 5;
+    //printf("Comparing qq and ww: %d\n", (*compar)( & qq, & ww));
+
+
     for (k = 1; k < num; k *= 2) {
         for (left = 0; left + k < num; left += k * 2) {
             right = left + k;
@@ -29,22 +41,37 @@ int mergesort (void* base, size_t num, size_t size, int (*compar)(const char*, c
             i = left;
             j = right;
 
-            while (i < right && j < right_end) {
+
+
+            //printf("%d %d; %d %d\n", i, right, j, right_end);
+            while ((i < right) && (j < right_end)) {
+
+                //printf("while\n");
+                //printf("%d %d\n", * (int *)((char *) base + i * size), * (int *)((char *) base + j * size));
+
                 // Merging.
                 //if (base[i * size] < base[j * size]) {
-                if ((*compar)((char *) base + i * size, (char *) base + j * size) < 0) {
+
+                printf("Comparing %d and %d: ", * (int *)((char *)base + i * size), * (int *)((char *)base + j * size)  );
+                printf("%d\n", (*compar)((char *)base + i * size, (char *)base + j * size));
+
+
+
+                if ((*compar)((char *)base + i * size, (char *)base + j * size) < 0) {
                     //temp[m * size] = base[i * size];
 
-                    cpy((char *) temp + m * size, (char *) base + i * size, size);
+                    printf("Copying %d to temp\n", * (int *)((char *)base + i * size) );
+                    cpy((char *)temp + m * size, (char *)base + i * size, size);
 
                     i++;
+                    m++;
                 }
                 else {
                     //temp[m * size] = base[j * size];
-
-                    cpy((char *) temp + m * size, (char *) base + j * size, size);
+                    cpy((char *)temp + m * size, (char *)base + j * size, size);
 
                     j++;
+                    m++;
                 }
             }
 
@@ -53,30 +80,30 @@ int mergesort (void* base, size_t num, size_t size, int (*compar)(const char*, c
             while (i < right) {
                 //temp[m * size] = base[i * size];
 
-                cpy((char *) temp + m * size, (char *) base + i * size, size);
+                cpy((char *)temp + m * size, (char *)base + i * size, size);
 
                 i++;
+                m++;
             }
             while (j < right) {
                 //temp[m * size] = base[j * size];
 
-                cpy((char *) temp + m * size, (char *) base + j * size, size);
+                cpy((char *)temp + m * size, (char *)base + j * size, size);
 
                 j++;
+                m++;
             }
 
             // Copy merged subarrays back.
             for (m = left; m < right_end; m++) {
                 //base[m * size] = temp[m * size];
 
-                //for (q = 0; q < size; q++) {
-                //    * ((char *) base + m * size + q) = * ((char *) temp + i * size + q);
-                //}
-
                 cpy((char *) base + m * size, (char *) temp + m * size, size);
             }
         }
     }
+
+    free(temp);
 
     return 0;
 }

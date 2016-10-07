@@ -10,21 +10,27 @@ int main(int argc, char *argv[])
     char * endptr = NULL;
     size_t num = argc - 2;
     void * base;
+    int elem;
 
     if (strcmp(argv[1], "int") == 0) {
         size = sizeof(int);
         base = malloc(num * size);
 
         for (i = 0; i < num; i++) {
-            * (int *) ((char *)base + i * size) = atoi(argv[i + 2]);
+            //printf("%d\n", i);
+            elem = atoi(argv[i + 2]);
+            cpy(((char *)base + i * size), &elem, size);
+            //* (int *) ((char *)base + i * size) = atoi(argv[i + 2]);
         }
 
+        //printf("\n\n\n");
         mergesort(base, num, size, * intcmp);
 
         for (i = 0; i < num; i++) {
-            printf("%i ", * (int *) ((char *)base + i * size));
+            printf("%i ", * ((int *)base + i));
         }
         printf("\n");
+        free(base);
     }
     else if (strcmp(argv[1], "char") == 0) {
         size = sizeof(char);
@@ -39,6 +45,7 @@ int main(int argc, char *argv[])
             printf("%c ", * ((char *)base + i * size));
         }
         printf("\n");
+        free(base);
     }
     else if (strcmp(argv[1], "str") == 0) {
         // PANIC!
@@ -50,6 +57,7 @@ int main(int argc, char *argv[])
         }
 
         mergesort(base, num, size, * strcmp);
+        free(base);
     }
     else {
         // MORE PANIC!
