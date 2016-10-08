@@ -1,8 +1,12 @@
-#include "../src/mergesort.c"
+#include <stddef.h>
 
-int mergesort (void* base, size_t num, size_t size, int (*compar)(const char*, const char*));
+typedef int (*compar_t)(const void*, const void*);
 
-int intcmp (const char* a, const char* b);
-int chrcmp (const char* a, const char* b);
+int mergesort (void* base, size_t num, size_t size, compar_t compar);
+
+int intcmp (const void* a, const void* b);
+int chrcmp (const void* a, const void* b);
+int chrcmp2 (const void** a, const void** b);
+int strcmp2 (const void** a, const void** b);
 
 void cpy (void * a, void * b, size_t size);

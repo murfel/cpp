@@ -1,8 +1,8 @@
 all: ms_cli
-ms_cli: bin/main.o
+ms_cli: bin/main.o bin/mergesort.o
 	mkdir -p bin
-	gcc bin/main.o -o ms_cli
-bin/main.o: src/main.c bin/mergesort.o
+	gcc bin/main.o bin/mergesort.o -o ms_cli
+bin/main.o: src/main.c include/mergesort.h
 	mkdir -p bin
 	gcc -c src/main.c -o bin/main.o
 bin/mergesort.o: src/mergesort.c include/mergesort.h
