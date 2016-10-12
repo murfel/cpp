@@ -1,4 +1,4 @@
-#include "position.h"
+#include "../include/position.h"
 
 int main() {
     intrusive_list list;
@@ -17,7 +17,7 @@ int main() {
     remove_position(l, 0, 1);
     remove_position(l, 38, 39);
     show_all_positions(l);
-    
+
     remove_all(l);
 
     return 0;
