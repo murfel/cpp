@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include "../include/position.h"
 
-typedef void (*op_t)(intrusive_node*, int*);
+typedef void (*op_t)(intrusive_node*, void*);
 
-void apply(intrusive_list *lst, op_t op, int* temp) {
+void apply(intrusive_list *lst, op_t op, void* temp) {
     intrusive_node *head = &lst->head;
     intrusive_node *node = head->next;
 
@@ -14,13 +14,13 @@ void apply(intrusive_list *lst, op_t op, int* temp) {
     }
 }
 
-void count_nodes(intrusive_node * node, int* temp) {
-    (*temp)++;
+void count_nodes(intrusive_node * node, void* temp) {
+    (*(int *)temp)++;
 }
 
-void print_node(intrusive_node * node, int* temp) {
+void print_node(intrusive_node * node, void* temp) {
     position_node *pnode = get_position(node);
-    printf("[%d, %d] ", pnode->x, pnode->y);
+    printf((char *)temp, pnode->x, pnode->y);
 }
 
 int main(int argc, char *argv[]) {
@@ -98,9 +98,8 @@ int main(int argc, char *argv[]) {
 
     }
     else if (strcmp(argv[3], "print") == 0) {
-        // пока работает без спецификации формата
         int temp;
-        apply(l, print_node, &temp);
+        apply(l, print_node, argv[4]);
         printf("\n");
     }
     else if (strcmp(argv[3], "count") == 0) {
