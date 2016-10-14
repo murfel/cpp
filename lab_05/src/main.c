@@ -39,20 +39,12 @@ int main(int argc, char *argv[]) {
         }
     }
     else if (strcmp(argv[1], "loadbin") == 0) {
-        // не забыть проверить на баги и если надо отдебажить
         FILE *f = fopen(argv[2], "rb");
         int x = 0;
         int y = 0;
         while (fread(&x, int_size, 1, f) != 0) {
-        //while (!feof(f)) {
-            //void * x = calloc(1, int_size);
-            //void * y = calloc(1, int_size);
-
-            //fread(&x, int_size, 1, f);
             fread(&y, int_size, 1, f);
             add_position(l, x, y);
-            //free(x);
-            //free(y);
         }
     }
     else {
@@ -60,10 +52,10 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    if (argc == 3)
-        return 0;
-
-
+    if (argc == 3) {
+        printf("No action specified\n");
+        return 1;
+    }
 
     if (strcmp(argv[3], "savetext") == 0) {
         FILE *f = fopen(argv[4], "w");
@@ -98,7 +90,6 @@ int main(int argc, char *argv[]) {
 
     }
     else if (strcmp(argv[3], "print") == 0) {
-        int temp;
         apply(l, print_node, argv[4]);
         printf("\n");
     }
@@ -112,6 +103,5 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    //show_all_positions(l);
     return 0;
 }
