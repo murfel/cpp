@@ -17,4 +17,8 @@ void show_all_positions(intrusive_list *list);
 
 void remove_all(intrusive_list *list);
 
+position_node *get_position(intrusive_node *node);
+
+void print_position(intrusive_node *node);
+
 #endif

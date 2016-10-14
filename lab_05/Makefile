@@ -3,8 +3,8 @@ CFLAGS=-I$(INCLUDE) -std=c99
 OBJS := bin/main.o bin/position.o bin/clist.o
 
 # link
-proggie: $(OBJS)
-	gcc $(OBJS) -o proggie
+main: $(OBJS)
+	gcc $(OBJS) -o main
 
 # pull in dependency info for *existing* .o files
 -include $(OBJS:.o=.d)
@@ -20,13 +20,13 @@ proggie: $(OBJS)
 bin/%.o: src/%.c
 	mkdir -p bin
 	gcc -c $(CFLAGS) src/$*.c -o bin/$*.o
-	gcc -MM $(CFLAGS) src/$*.c > $*.d
-	@mv -f $*.d $*.d.tmp
-	@sed -e 's|.*:|$*.o:|' < $*.d.tmp > $*.d
-	@sed -e 's/.*://' -e 's/\\$$//' < $*.d.tmp | fmt -1 | \
-	  sed -e 's/^ *//' -e 's/$$/:/' >> $*.d
-	@rm -f $*.d.tmp
+	gcc -MM $(CFLAGS) src/$*.c > bin/$*.d
+	@mv -f bin/$*.d bin/$*.d.tmp
+	@sed -e 's|.*:|$*.o:|' < bin/$*.d.tmp > bin/$*.d
+	@sed -e 's/.*://' -e 's/\\$$//' < bin/$*.d.tmp | fmt -1 | \
+	  sed -e 's/^ *//' -e 's/$$/:/' >> bin/$*.d
+	@rm -f bin/$*.d.tmp
 
 # remove compilation products
 clean:
-	rm -f proggie bin/*.o *.d
+	rm -rf main bin/*.o bin/*.d *.d bin/
