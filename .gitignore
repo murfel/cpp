@@ -1,6 +1,8 @@
 *~
 *.o
+*.zip
 lab_01/lab1
 lab_02/lab2
 lab_03/pose_db
 lab_04/ms_cli
+
