@@ -7,6 +7,7 @@ typedef struct human_s {
     char middle_name[256];
     char family_name[256];
     char phones[10][21];
+    int phones_total;
 } human_t;
 
 typedef struct phonebook_s {
@@ -22,3 +23,5 @@ void gen_phonebook(phonebook_t *book, size_t size);
 void clear_phonebook(phonebook_t *book);
 human_t get_human(phonebook_t *book, char* family_name);
 void push_back_human(phonebook_t *book, human_t *human);
+
+int compar (const void* p1, const void* p2);

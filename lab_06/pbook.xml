@@ -1,12 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phonebook>
-    <human name="Petr Petrovich Petrov">
-        <phone>7654321</phone>
-        <phone>9051234567</phone>
+    <human name="Bolotnikova Stella Filippovna">
     </human>
-    <human name="Ivan Ivanonich Ivanov">
-        <phone>1234567</phone>
-        <phone>9211234567</phone>
-        <phone>9111234567</phone>
+    <human name="Chirkash Angelina Olegovna">
+        <phone>583904818</phone>
+        <phone>1980619155</phone>
+        <phone>969973933</phone>
+        <phone>1855821954</phone>
+        <phone>1449846338</phone>
+    </human>
+    <human name="Chuchanova Elyvira Robertovna">
+    </human>
+    <human name="Chughinova Ulyyana Romanovna">
+        <phone>1054677642</phone>
+        <phone>91438894</phone>
+        <phone>1240126294</phone>
+        <phone>1882950243</phone>
+        <phone>497035243</phone>
+        <phone>474124263</phone>
+        <phone>862206781</phone>
+        <phone>1154306904</phone>
+    </human>
+    <human name="Delova Aliya Antonovna">
+        <phone>802268779</phone>
+        <phone>84361625</phone>
+        <phone>1407309464</phone>
+        <phone>936444563</phone>
+        <phone>619055434</phone>
+    </human>
+    <human name="Efimova Rebekka Petrovna">
+        <phone>298467585</phone>
+    </human>
+    <human name="Ershova Anisiya Yuryevna">
+        <phone>2142515018</phone>
+        <phone>618824880</phone>
+        <phone>1845502031</phone>
+        <phone>1485426180</phone>
+        <phone>1688488987</phone>
+        <phone>317165923</phone>
+        <phone>1632226008</phone>
+        <phone>1327033874</phone>
+        <phone>1119434702</phone>
+    </human>
+    <human name="Guschina Famary Petrovna">
+        <phone>600439705</phone>
+        <phone>1810098554</phone>
+        <phone>1516459227</phone>
+    </human>
+    <human name="Ogorodnikova Evfrosiniya Grigoryevna">
+        <phone>1221103066</phone>
+        <phone>828272601</phone>
+        <phone>405596348</phone>
+        <phone>1381481617</phone>
+        <phone>1126740186</phone>
+        <phone>657271661</phone>
+        <phone>982206818</phone>
+        <phone>1464941508</phone>
+        <phone>2002472956</phone>
+    </human>
+    <human name="Vahrusheva Veronika Semenovna">
+        <phone>1857165046</phone>
     </human>
 </phonebook>
