@@ -24,4 +24,4 @@ void clear_phonebook(phonebook_t *book);
 human_t get_human(phonebook_t *book, char* family_name);
 void push_back_human(phonebook_t *book, human_t *human);
 
-int compar (const void* p1, const void* p2);
+int compar(const void* p1, const void* p2);

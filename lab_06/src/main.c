@@ -14,6 +14,8 @@
 
 phonebook_t book;
 human_t human;
+//human.phones_total = 0;
+
 
 void start_element(void *data, const char *element, const char **attribute) {
     /*
@@ -34,24 +36,22 @@ void start_element(void *data, const char *element, const char **attribute) {
 
 void end_element(void *data, const char *element) {
     //printf("end_element %s\n", element);
-    if (strcmp(element, "phone") == 0) {
-        human.phones_total++;
-    }
-    else if (strcmp(element, "human") == 0) {
+    if (strcmp(element, "human") == 0) {
         push_back_human(&book, &human);
     }
 }
 
 void handle_data(void *data, const char *content, int length) {
-    char *tmp = malloc(length + 1);
+    char *tmp = malloc(length + 10);
     strncpy(tmp, content, length);
     tmp[length] = '\0';
     //printf("handle_data '%s' (len %d)\n", tmp, length);
     strcpy(human.phones[human.phones_total], tmp);
+    human.phones_total++;
     free(tmp);
 }
 
-int parse_xml(char *buff, size_t buff_size) {
+int parse_xml(const char *filename, char *buff, size_t buff_size) {
     FILE *fp;
     fp = fopen("pbook.xml", "r");
     if (fp == NULL) {
@@ -86,7 +86,7 @@ int parse_xml(char *buff, size_t buff_size) {
 int load_phonebook_xml(const char *filename, phonebook_t *book) {
     int result;
     char buffer[BUFFER_SIZE];
-    result = parse_xml(buffer, BUFFER_SIZE);
+    result = parse_xml(filename, buffer, BUFFER_SIZE);
     assert(result == 0);
 }
 
@@ -107,6 +107,9 @@ int save_phonebook_xml(const char *filename, phonebook_t *book) {
         fprintf(fp, "%s</human>\n", INDENT);
     }
     fprintf(fp, "</phonebook>\n");
+    fclose(fp);
+
+    return 0;
 }
 
 void print_phonebook(phonebook_t *book) {
@@ -157,7 +160,10 @@ void push_back_human(phonebook_t *book, human_t *human) {
     if (book->size == book->capacity) {
         book->capacity = book->capacity * 2 + 1;
 
-        human_t * tmp = realloc(book->humans, sizeof(human_t) * book->capacity);
+        //human_t * tmp = realloc(book->humans, sizeof(human_t) * book->capacity);
+        book->humans = realloc(book->humans, sizeof(human_t) * book->capacity);
+
+        /*
         if (tmp != NULL) {
             if (tmp != book->humans) {
                 book->humans = tmp;
@@ -167,6 +173,7 @@ void push_back_human(phonebook_t *book, human_t *human) {
             printf("Failed to (re)allocate memory.");
             exit(1);
         }
+        */
     }
     memcpy(book->humans + book->size++, human, sizeof(human_t));
 }
@@ -179,12 +186,13 @@ int main(int argc, char **argv) {
 
     assert(argc > 2);
 
-    load_phonebook_xml(argv[1], &book);
+    //load_phonebook_xml(argv[1], &book);
+    //qsort(book.humans, book.size, sizeof(human_t), compar);
+    //print_phonebook(&book);
+
+    gen_phonebook(&book, 3);
     qsort(book.humans, book.size, sizeof(human_t), compar);
     print_phonebook(&book);
-
-    gen_phonebook(&book, 10);
-    qsort(book.humans, book.size, sizeof(human_t), compar);
     save_phonebook_xml(argv[2], &book);
     clear_phonebook(&book);
 
