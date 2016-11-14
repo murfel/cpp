@@ -8,15 +8,6 @@
 
 typedef size_t (*file_io)(void *, size_t, size_t, FILE *);
 
-static int process_headers(BITMAPFILEHEADER * file_header, BITMAPINFOHEADER * dib_header, FILE * fp, file_io function) {
-    if (!(*function)(&(file_header->magic), sizeof(char), 2, fp)) exit(1);
-    if (!(*function)(&(file_header->file_size), sizeof(int32_t), 1, fp)) exit(1);
-    if (!(*function)(&(file_header->reserved), sizeof(int16_t), 2, fp)) exit(1);
-    if (!(*function)(&(file_header->offset), sizeof(int32_t), 1, fp)) exit(1);
-    if (!(*function)(dib_header, sizeof(BITMAPINFOHEADER), 1, fp)) exit(1);
-    return 0;
-}
-
 static int calc_line_width(int width) {
     int line_width = width * 3;
     while (line_width % 4 != 0) {
@@ -32,7 +23,8 @@ int load_bmp(const char * filename, BITMAPFILEHEADER * file_header, BITMAPINFOHE
         exit(1);
     }
 
-    process_headers(file_header, dib_header, fp, &fread);
+    if (!fread(file_header, sizeof(BITMAPFILEHEADER), 1, fp)) exit(1);
+    if (!fread(dib_header, sizeof(BITMAPINFOHEADER), 1, fp)) exit(1);
 
     int line_width = calc_line_width(dib_header->width);
     int line_width_no_padding = BYTES_PER_PIXEL * dib_header->width;
@@ -65,7 +57,8 @@ int save_bmp(const char * filename, BITMAPFILEHEADER * file_header, BITMAPINFOHE
         exit(1);
     }
 
-    process_headers(file_header, dib_header, fp, (file_io)&fwrite);
+    if (!fwrite(file_header, sizeof(BITMAPFILEHEADER), 1, fp)) exit(1);
+    if (!fwrite(dib_header, sizeof(BITMAPINFOHEADER), 1, fp)) exit(1);
 
     int line_width = calc_line_width(dib_header->width);
     int line_width_no_padding = BYTES_PER_PIXEL * dib_header->width;

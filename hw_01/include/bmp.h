@@ -5,12 +5,14 @@
 
 // https://wiki.multimedia.cx/index.php?title=BMP
 
+#pragma pack(push, 1)
 typedef struct BITMAPFILEHEADER {
  char magic[2];              // 'B' 'M'
  int32_t file_size;
  int16_t reserved[2];
  int32_t offset;            // offset to bitmap data, relative to start of file
 } BITMAPFILEHEADER;
+#pragma pack(pop)
 
 typedef struct BITMAPINFOHEADER {
  int32_t header_size;                // 40
