@@ -14,6 +14,7 @@ typedef struct BITMAPFILEHEADER {
 } BITMAPFILEHEADER;
 #pragma pack(pop)
 
+#pragma pack(push, 1)
 typedef struct BITMAPINFOHEADER {
  int32_t header_size;                // 40
  int32_t width;
@@ -28,7 +29,7 @@ typedef struct BITMAPINFOHEADER {
  int32_t number_of_colors;           // only relevant for bits_per_pixel < 16; if set to zero, it's assumed to be 2^bits_per_pixel
  int32_t number_of_important_colors; // 0 means all colors are important
 } BITMAPINFOHEADER;
-
+#pragma pack(pop)
 
 int load_bmp(const char *, BITMAPFILEHEADER *, BITMAPINFOHEADER *, char ***);
 int crop(BITMAPFILEHEADER *, BITMAPINFOHEADER *, char ***, BITMAPFILEHEADER *, BITMAPINFOHEADER *, char ***, int, int, int, int);
