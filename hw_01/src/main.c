@@ -21,7 +21,17 @@ int main(int argc, char **argv) {
         BITMAPINFOHEADER new_dib_header;
 
         load_bmp(argv[2], &file_header, &dib_header, &data);
-        crop(&file_header, &dib_header, &data, &new_file_header, &new_dib_header, &new_data, atoi(argv[4]), atoi(argv[5]), atoi(argv[6]), atoi(argv[7]));
+
+        int x = atoi(argv[4]);
+        int y = atoi(argv[5]);
+        int width = atoi(argv[6]);
+        int height = atoi(argv[7]);
+
+        if ((x < 0) || (y < 0) || (width < 1) || (height < 1)) return 1;
+        if ((x >= dib_header.width) || (y >= dib_header.height)) return 1;
+        if ((x + width > dib_header.width) || (y + height > dib_header.height)) return 1;
+
+        crop(&file_header, &dib_header, &data, &new_file_header, &new_dib_header, &new_data, x, y, width, height);
 
         free(data[0]);
         free(data);
