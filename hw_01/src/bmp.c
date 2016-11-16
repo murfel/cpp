@@ -66,8 +66,8 @@ int save_bmp(const char * filename, BITMAPFILEHEADER * file_header, BITMAPINFOHE
 
     int zero = 0;
     for (int i = dib_header->height - 1; i >= 0; i--) {
-        if(!fwrite((*data)[i], 1, line_width_no_padding, fp)) exit(1);
-        if(!fwrite(&zero, padding_len, 1, fp)) exit(1);
+        if (!fwrite((*data)[i], 1, line_width_no_padding, fp)) exit(1);
+        if (padding_len > 0 && !fwrite(&zero, padding_len, 1, fp)) exit(1);
     }
 
     fclose(fp);
