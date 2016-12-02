@@ -4,7 +4,7 @@
 
 class Scheme{
   public:
-    Scheme(int capacity); 
+    Scheme(int capacity);
     ~Scheme();
 
     void push_back_figure(Figure* fg);
@@ -16,7 +16,7 @@ class Scheme{
     void move(int id, int new_x, int new_y);
 
   private:
-    ...
-
     Figure** figures_; // размер массива задается в конструкторе и больше не растет
+    int capacity;
+    int size;
 };
