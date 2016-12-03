@@ -5,6 +5,8 @@
 // TODO
 
 Scheme::Scheme(int capacity) {
+    this->capacity = capacity;
+    this->size = 0;
     figures_ = new Figure*[capacity];
 }
 
@@ -21,6 +23,7 @@ void Scheme::push_back_figure(Figure* fg) {
 void Scheme::remove_figure(int id) {
     for (int i = 0; i < size; i++) {
         if (figures_[i]->get_id() == id) {
+            delete figures_[i];
             for (int j = i; j < size - 1; j++) {
                 figures_[j] = figures_[j + 1];
             }

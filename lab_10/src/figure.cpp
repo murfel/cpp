@@ -2,6 +2,13 @@
 
 // TODO
 
+Figure::Figure() {
+    ;
+}
+Figure::~Figure() {
+    ;
+}
+
 Figure::Figure(int id, int x, int y) {
     set_id(id);
     set_x(x);

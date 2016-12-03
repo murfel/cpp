@@ -12,7 +12,7 @@ Rectangle::Rectangle(int id, int x, int y, int width, int height) {
 }
 
 void Rectangle::print() const {
-    printf("Rectangle %d: x = %d y = %d width = %d height = %\n", get_id(), get_x(), get_y(), get_width(), get_height());
+    printf("Rectangle %d: x = %d y = %d width = %d height = %d\n", get_id(), get_x(), get_y(), get_width(), get_height());
 }
 
 bool Rectangle::is_inside(int x, int y) const {

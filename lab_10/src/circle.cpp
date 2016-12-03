@@ -10,6 +10,7 @@ Circle::Circle(int id, int x, int y, int radius, const char* label) {
     set_x(x);
     set_y(y);
     set_radius(radius);
+    this->label = new char[1];
     set_label(label);
 }
 

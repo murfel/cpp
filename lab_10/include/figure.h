@@ -2,6 +2,7 @@
 
 class Figure {
   public:
+    Figure();
     Figure(int id, int x, int y);
     virtual ~Figure();
 
