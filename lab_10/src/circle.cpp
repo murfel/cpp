@@ -3,8 +3,6 @@
 #include <cstring>
 #include "circle.h"
 
-// TODO
-
 Circle::Circle(int id, int x, int y, int radius, const char* label) {
     set_id(id);
     set_x(x);

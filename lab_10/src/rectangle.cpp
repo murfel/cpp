@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include "rectangle.h"
 
-// TODO
-
 Rectangle::Rectangle(int id, int x, int y, int width, int height) {
     set_id(id);
     set_x(x);

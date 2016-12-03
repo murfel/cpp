@@ -2,8 +2,6 @@
 #include "rectangle.h"
 #include "circle.h"
 
-// TODO
-
 Scheme::Scheme(int capacity) {
     this->capacity = capacity;
     this->size = 0;
@@ -11,6 +9,9 @@ Scheme::Scheme(int capacity) {
 }
 
 Scheme::~Scheme() {
+    for (int i = 0; i < size; i++) {
+        delete figures_[i];
+    }
     delete [] figures_;
 }
 
