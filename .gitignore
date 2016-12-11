@@ -6,3 +6,12 @@ lab_02/lab2
 lab_03/pose_db
 lab_04/ms_cli
 
+# ignore all files except the ones with an extension
+*
+!/**/
+!*.*
+
+# ignore bin dirs
+bin/
+
+hw_01/*.bmp
