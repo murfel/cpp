@@ -35,7 +35,7 @@ void EmployeesArray::add (const Employee *e) {
 }
 
 int EmployeesArray::total_salary() const {
-    int total;
+    int total = 0;
     for (int i = 0; i < _size; i++) {
         total += _employees[i]->salary();
     }
@@ -85,7 +85,7 @@ ofstream& SalesManager::print(ofstream& ofs) {
 istream& operator>>(istream& is, Developer& o) {
     string s;
     is >> s >> o._base_salary >> o._has_bonus;
-    o._name = new char [s.length()];
+    o._name = new char [s.length() + 1];
     strcpy(o._name, s.c_str());
     return is;
 }
@@ -98,7 +98,7 @@ ifstream& operator>>(ifstream & ifs, Developer& o) {
         ifs.read(&c, 1);
         s += c;
     }
-    o._name = new char [s.length()];
+    o._name = new char [s.length() + 1];
     strcpy(o._name, s.c_str());
     ifs.read((char *)&o._base_salary, sizeof(o._base_salary));
     ifs.read((char *)&o._has_bonus, sizeof(o._has_bonus));
@@ -109,7 +109,7 @@ ifstream& operator>>(ifstream & ifs, Developer& o) {
 istream& operator>>(istream& is, SalesManager& o) {
     string s;
     is >> s >> o._base_salary >> o._sold_nm >> o._price;
-    o._name = new char [s.length()];
+    o._name = new char [s.length() + 1];
     strcpy(o._name, s.c_str());
     return is;
 }
@@ -122,7 +122,7 @@ ifstream& operator>>(ifstream& ifs, SalesManager& o) {
         ifs.read(&c, 1);
         s += c;
     }
-    o._name = new char [s.length()];
+    o._name = new char [s.length() + 1];
     strcpy(o._name, s.c_str());
     ifs.read((char *)&o._base_salary, sizeof(o._base_salary));
     ifs.read((char *)&o._sold_nm, sizeof(o._sold_nm));
@@ -147,6 +147,7 @@ ofstream& operator<<(ofstream& ofs, EmployeesArray& o) {
     for (int i = 0; i < o._size; i++) {
         o._employees[i]->print(ofs);
     }
+    return ofs;
 }
 
 // бинарный ввод из файла
@@ -167,4 +168,5 @@ ifstream& operator>>(ifstream& ifs, EmployeesArray& o) {
             o.add(worker);
         }
     }
+    return ifs;
 }
