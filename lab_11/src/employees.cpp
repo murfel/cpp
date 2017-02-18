@@ -22,6 +22,9 @@ EmployeesArray::EmployeesArray() : _size(0), _capacity(4) {
 }
 
 EmployeesArray::~EmployeesArray() {
+    for (int i = 0; i < _size; i++) {
+        delete _employees[i];
+    }
     delete[] _employees;
 }
 
@@ -32,6 +35,7 @@ void EmployeesArray::add(const Employee *e) {
         for (int i = 0; i < _size; i++) {
             temp[i] = _employees[i];
         }
+        delete[] _employees;
         _employees = temp;
     }
     _employees[_size++] = (Employee *) e;
@@ -43,6 +47,10 @@ int EmployeesArray::total_salary() const {
         total += _employees[i]->salary();
     }
     return total;
+}
+
+Employee::~Employee() {
+    delete[] _name;
 }
 
 ostream& Developer::print(ostream& os) {
@@ -60,10 +68,6 @@ ofstream& Developer::print(ofstream& ofs) {
     ofs.write((const char *)&_base_salary, sizeof(_base_salary));
     ofs.write((const char *)&_has_bonus, sizeof(_has_bonus));
     return ofs;
-}
-
-Developer::~Developer() {
-    delete[] _name;
 }
 
 ostream& SalesManager::print(ostream& os) {
@@ -85,10 +89,6 @@ ofstream& SalesManager::print(ofstream& ofs) {
     return ofs;
 }
 
-SalesManager::~SalesManager() {
-    delete[] _name;
-}
-
 istream& operator>>(istream& is, Developer& o) {
     string s;
     is >> s >> o._base_salary >> o._has_bonus;
@@ -97,15 +97,20 @@ istream& operator>>(istream& is, Developer& o) {
     return is;
 }
 
-ifstream& operator>>(ifstream & ifs, Developer& o) {
+char * read_name(ifstream& ifs) {
     string s;
     char c = 1;
     while (c != 0) {
         ifs.read(&c, 1);
         s += c;
     }
-    o._name = new char [s.length() + 1];
-    strcpy(o._name, s.c_str());
+    char *name = new char [s.length() + 1];
+    strcpy(name, s.c_str());
+    return name;
+}
+
+ifstream& operator>>(ifstream& ifs, Developer& o) {
+    o._name = read_name(ifs);
     ifs.read((char *)&o._base_salary, sizeof(o._base_salary));
     ifs.read((char *)&o._has_bonus, sizeof(o._has_bonus));
     return ifs;
@@ -120,14 +125,7 @@ istream& operator>>(istream& is, SalesManager& o) {
 }
 
 ifstream& operator>>(ifstream& ifs, SalesManager& o) {
-    string s;
-    char c = 1;
-    while (c != 0) {
-        ifs.read(&c, 1);
-        s += c;
-    }
-    o._name = new char [s.length() + 1];
-    strcpy(o._name, s.c_str());
+    o._name = read_name(ifs);
     ifs.read((char *)&o._base_salary, sizeof(o._base_salary));
     ifs.read((char *)&o._sold_nm, sizeof(o._sold_nm));
     ifs.read((char *)&o._price, sizeof(o._price));

@@ -10,18 +10,22 @@ enum employees {DEVELOPER = 1, SALES_MANAGER};
 
 class Employee {
 public:
-    virtual ~Employee() {}
+    ~Employee();
     virtual int salary() const = 0;
     virtual ostream& print(ostream& os) = 0;
     virtual ofstream& print(ofstream& os) = 0;
     friend ostream& operator<<(ostream& os, Employee& o);
     friend ofstream& operator<<(ofstream& ofs, Employee& o);
+protected:
+    int32_t type;
+    char *_name;
+    int32_t _base_salary;
 };
 
 
 class Developer : public Employee {
 public:
-    virtual ~Developer();
+    //virtual ~Developer();
     int salary() const {
         int salary = _base_salary;
         if (_has_bonus) { salary += 1000; }
@@ -33,15 +37,13 @@ public:
     friend ifstream& operator>>(ifstream& ifs, Developer& o);
 private:
     int32_t type = DEVELOPER;
-    char *_name;
-    int32_t _base_salary;
     bool _has_bonus;
 };
 
 
 class SalesManager : public Employee {
 public:
-    virtual ~SalesManager();
+    //virtual ~SalesManager();
     int salary() const {
         return _base_salary + _sold_nm * _price * 0.01;
     }
@@ -51,8 +53,6 @@ public:
     friend ifstream& operator>>(ifstream& ifs, SalesManager& e);
 private:
     int32_t type = SALES_MANAGER;
-    char *_name;
-    int32_t _base_salary;
     int32_t _sold_nm, _price;
 };
 
@@ -75,5 +75,7 @@ private:
 
 ostream& operator<<(ostream& os, Employee& o);
 ofstream& operator<<(ofstream& ofs, Employee& o);
+
+char * read_name(ifstream& ifs);
 
 #endif
