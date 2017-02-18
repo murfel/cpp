@@ -17,7 +17,6 @@ public:
     friend ostream& operator<<(ostream& os, Employee& o);
     friend ofstream& operator<<(ofstream& ofs, Employee& o);
 protected:
-    int32_t type;
     char *_name;
     int32_t _base_salary;
 };
@@ -25,7 +24,7 @@ protected:
 
 class Developer : public Employee {
 public:
-    //virtual ~Developer();
+    Developer();
     int salary() const {
         int salary = _base_salary;
         if (_has_bonus) { salary += 1000; }
@@ -36,14 +35,14 @@ public:
     friend istream& operator>>(istream& is, Developer& o);
     friend ifstream& operator>>(ifstream& ifs, Developer& o);
 private:
-    int32_t type = DEVELOPER;
+    int32_t type;
     bool _has_bonus;
 };
 
 
 class SalesManager : public Employee {
 public:
-    //virtual ~SalesManager();
+    SalesManager();
     int salary() const {
         return _base_salary + _sold_nm * _price * 0.01;
     }
@@ -52,7 +51,7 @@ public:
     friend istream& operator>>(istream& is, SalesManager& e);
     friend ifstream& operator>>(ifstream& ifs, SalesManager& e);
 private:
-    int32_t type = SALES_MANAGER;
+    int32_t type;
     int32_t _sold_nm, _price;
 };
 
@@ -68,8 +67,8 @@ public:
     friend ifstream& operator>>(ifstream& ifs, EmployeesArray& o);
 private:
     Employee **_employees;
-    int32_t _size = 0;
-    int32_t _capacity = 0;
+    int32_t _size;
+    int32_t _capacity;
 };
 
 

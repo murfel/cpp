@@ -53,6 +53,10 @@ Employee::~Employee() {
     delete[] _name;
 }
 
+Developer::Developer() {
+    type = DEVELOPER;
+}
+
 ostream& Developer::print(ostream& os) {
     os << "Developer";
     os << "\nName: " << _name;
@@ -68,6 +72,10 @@ ofstream& Developer::print(ofstream& ofs) {
     ofs.write((const char *)&_base_salary, sizeof(_base_salary));
     ofs.write((const char *)&_has_bonus, sizeof(_has_bonus));
     return ofs;
+}
+
+SalesManager::SalesManager() {
+    type = SALES_MANAGER;
 }
 
 ostream& SalesManager::print(ostream& os) {

@@ -15,7 +15,7 @@ int main() {
         if (s.compare("load") == 0) {
             cin >> s;
             ifstream f;
-            f.open(s, ios_base::binary);
+            f.open(s.c_str(), ios_base::binary);
             f >> employee_list;
             f.close();
         }
@@ -41,7 +41,7 @@ int main() {
         else if (s.compare("save") == 0) {
             cin >> s;
             ofstream f;
-            f.open(s, ios_base::binary);
+            f.open(s.c_str(), ios_base::binary);
             f << employee_list;
             f.close();
         }
