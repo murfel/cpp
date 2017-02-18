@@ -8,27 +8,30 @@
 using namespace std;
 
 ostream& operator<<(ostream& os, Employee& o) {
-  o.print(os);
-  return os;
+    o.print(os);
+    return os;
 }
 
 ofstream& operator<<(ofstream& ofs, Employee& o) {
-  o.print(ofs);
-  return ofs;
+    o.print(ofs);
+    return ofs;
 }
 
 EmployeesArray::EmployeesArray() : _size(0), _capacity(4) {
     _employees = new Employee * [_capacity];
 }
 
-void EmployeesArray::add (const Employee *e) {
+EmployeesArray::~EmployeesArray() {
+    delete[] _employees;
+}
+
+void EmployeesArray::add(const Employee *e) {
     if (_size == _capacity) {
         _capacity *= 2;
         Employee ** temp = new Employee * [_capacity];
         for (int i = 0; i < _size; i++) {
             temp[i] = _employees[i];
         }
-        delete[] _employees;
         _employees = temp;
     }
     _employees[_size++] = (Employee *) e;
@@ -42,7 +45,6 @@ int EmployeesArray::total_salary() const {
     return total;
 }
 
-
 ostream& Developer::print(ostream& os) {
     os << "Developer";
     os << "\nName: " << _name;
@@ -54,12 +56,15 @@ ostream& Developer::print(ostream& os) {
 
 ofstream& Developer::print(ofstream& ofs) {
     ofs.write((const char *)&type, sizeof(type));
-    ofs.write((const char *)_name, sizeof(strlen(_name)) + 1);
+    ofs.write((const char *)_name, strlen(_name) + 1);
     ofs.write((const char *)&_base_salary, sizeof(_base_salary));
     ofs.write((const char *)&_has_bonus, sizeof(_has_bonus));
     return ofs;
 }
 
+Developer::~Developer() {
+    delete[] _name;
+}
 
 ostream& SalesManager::print(ostream& os) {
     os << "Sales Manager";
@@ -73,14 +78,16 @@ ostream& SalesManager::print(ostream& os) {
 
 ofstream& SalesManager::print(ofstream& ofs) {
     ofs.write((const char *)&type, sizeof(type));
-    ofs.write((const char *)_name, sizeof(strlen(_name)) + 1);
+    ofs.write((const char *)_name, strlen(_name) + 1);
     ofs.write((const char *)&_base_salary, sizeof(_base_salary));
     ofs.write((const char *)&_sold_nm, sizeof(_sold_nm));
     ofs.write((const char *)&_price, sizeof(_price));
     return ofs;
 }
 
-
+SalesManager::~SalesManager() {
+    delete[] _name;
+}
 
 istream& operator>>(istream& is, Developer& o) {
     string s;
@@ -89,7 +96,6 @@ istream& operator>>(istream& is, Developer& o) {
     strcpy(o._name, s.c_str());
     return is;
 }
-
 
 ifstream& operator>>(ifstream & ifs, Developer& o) {
     string s;
@@ -105,7 +111,6 @@ ifstream& operator>>(ifstream & ifs, Developer& o) {
     return ifs;
 }
 
-
 istream& operator>>(istream& is, SalesManager& o) {
     string s;
     is >> s >> o._base_salary >> o._sold_nm >> o._price;
@@ -113,7 +118,6 @@ istream& operator>>(istream& is, SalesManager& o) {
     strcpy(o._name, s.c_str());
     return is;
 }
-
 
 ifstream& operator>>(ifstream& ifs, SalesManager& o) {
     string s;
@@ -129,7 +133,6 @@ ifstream& operator>>(ifstream& ifs, SalesManager& o) {
     ifs.read((char *)&o._price, sizeof(o._price));
     return ifs;
 }
-
 
 // текстовый вывод в консоль всего списка
 ostream& operator<<(ostream& os, EmployeesArray& o) {

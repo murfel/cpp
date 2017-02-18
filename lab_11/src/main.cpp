@@ -6,7 +6,7 @@
 using namespace std;
 
 int main() {
-    EmployeesArray * employee_list = new EmployeesArray();
+    EmployeesArray employee_list;
     string s;
     int32_t type;
 
@@ -16,23 +16,23 @@ int main() {
             cin >> s;
             ifstream f;
             f.open(s, ios_base::binary);
-            f >> *employee_list;
+            f >> employee_list;
             f.close();
         }
         else if (s.compare("list") == 0) {
-            cout << *employee_list;
+            cout << employee_list;
         }
         else if (s.compare("add") == 0) {
             cin >> type;
             if (type == DEVELOPER) {
                 Developer * worker = new Developer();
                 cin >> *worker;
-                employee_list->add(worker);
+                employee_list.add(worker);
             }
             else if (type == SALES_MANAGER) {
                 SalesManager * worker = new SalesManager();
                 cin >> *worker;
-                employee_list->add(worker);
+                employee_list.add(worker);
             }
             else {
                 cout << "The type " << type << " is not recognized.";
@@ -42,7 +42,7 @@ int main() {
             cin >> s;
             ofstream f;
             f.open(s, ios_base::binary);
-            f << *employee_list;
+            f << employee_list;
             f.close();
         }
         else if (s.compare("exit") == 0) {
