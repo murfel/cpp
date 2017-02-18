@@ -10,7 +10,7 @@ enum employees {DEVELOPER = 1, SALES_MANAGER};
 
 class Employee {
 public:
-    ~Employee();
+    virtual ~Employee();
     virtual int salary() const = 0;
     virtual ostream& print(ostream& os) = 0;
     virtual ofstream& print(ofstream& os) = 0;
