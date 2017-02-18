@@ -2,43 +2,74 @@
 #define __LAB11_EMPLOYEES_H_INCLUDED
 
 #include <stdint.h>
+#include <iostream>
 
-class Developer {
+using namespace std;
+
+enum employees {DEVELOPER = 1, SALES_MANAGER};
+
+class Employee {
+public:
+  virtual int salary() const = 0;
+  virtual ostream& print(ostream& os) = 0;
+  virtual ofstream& print(ofstream& os) = 0;
+  friend ostream& operator<<(ostream& os, Employee& o);
+  friend ofstream& operator<<(ofstream& ofs, Employee& o);
+};
+
+
+class Developer : public Employee {
 public:
   int salary() const {
     int salary = _base_salary;
     if (_has_bonus) { salary += 1000; }
     return salary;
   }
-  /* ?? operator>>(??); */
-  /* ?? operator<<(??); */
+  ostream& print(ostream& os);
+  ofstream& print(ofstream& ofs);
+  friend istream& operator>>(istream& is, Developer& o);
+  friend ifstream& operator>>(ifstream& ifs, Developer& o);
 private:
+  int32_t type = DEVELOPER;
   char *_name;
   int32_t _base_salary;
   bool _has_bonus;
 };
 
-class SalesManager {
+
+
+class SalesManager : public Employee {
 public:
   int salary() const {
     return _base_salary + _sold_nm * _price * 0.01;
   }
-  /* ?? operator>>(??); */
-  /* ?? operator<<(??); */
+  ostream& print(ostream& os);
+  ofstream& print(ofstream& ofs);
+  friend istream& operator>>(istream& is, SalesManager& e);
+  friend ifstream& operator>>(ifstream& ifs, SalesManager& e);
 private:
+  int32_t type = SALES_MANAGER;
   char *_name;
   int32_t _base_salary;
   int32_t _sold_nm, _price;
 };
 
+
 class EmployeesArray {
 public:
+  EmployeesArray();
   void add(const Employee *e);
   int total_salary() const;
-  /* ?? operator>>(??); */
-  /* ?? operator<<(??); */
+  friend ostream& operator<<(ostream& os, EmployeesArray& o);
+  friend ofstream& operator<<(ofstream& ofs, EmployeesArray& o);
+  friend ifstream& operator>>(ifstream& ifs, EmployeesArray& o);
 private:
   Employee **_employees;
+  int32_t _size = 0;
+  int32_t _capacity = 0;
 };
+
+ostream& operator<<(ostream& os, Employee& o);
+ofstream& operator<<(ofstream& ofs, Employee& o);
 
 #endif
