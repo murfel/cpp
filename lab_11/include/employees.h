@@ -12,10 +12,14 @@ class Employee {
 public:
     virtual ~Employee();
     virtual int salary() const = 0;
-    virtual std::ostream& print(std::ostream& os) = 0;
-    virtual std::ofstream& print(std::ofstream& os) = 0;
-    friend std::ostream& operator<<(std::ostream& os, Employee& o);
-    friend std::ofstream& operator<<(std::ofstream& ofs, Employee& o);
+    virtual std::ostream& print(std::ostream& os) const = 0;
+    virtual std::ofstream& print(std::ofstream& ofs) const = 0;
+    virtual std::istream& read(std::istream& is) = 0;
+    virtual std::ifstream& read(std::ifstream& ifs) = 0;
+    friend std::ostream& operator<<(std::ostream& os, const Employee& o);
+    friend std::ofstream& operator<<(std::ofstream& ofs, const Employee& o);
+    friend std::istream& operator>>(std::istream& is, Employee& o);
+    friend std::ifstream& operator>>(std::ifstream& ifs, Employee& o);
 protected:
     char *_name;
     int32_t _base_salary;
@@ -30,8 +34,10 @@ public:
         if (_has_bonus) { salary += 1000; }
         return salary;
     }
-    std::ostream& print(std::ostream& os);
-    std::ofstream& print(std::ofstream& ofs);
+    std::ostream& print(std::ostream& os) const;
+    std::ofstream& print(std::ofstream& ofs) const;
+    std::istream& read(std::istream& is);
+    std::ifstream& read(std::ifstream& ifs);
     friend std::istream& operator>>(std::istream& is, Developer& o);
     friend std::ifstream& operator>>(std::ifstream& ifs, Developer& o);
 private:
@@ -48,10 +54,12 @@ public:
     int salary() const {
         return _base_salary + _sold_nm * _price * 0.01;
     }
-    std::ostream& print(std::ostream& os);
-    std::ofstream& print(std::ofstream& ofs);
-    friend std::istream& operator>>(std::istream& is, SalesManager& e);
-    friend std::ifstream& operator>>(std::ifstream& ifs, SalesManager& e);
+    std::ostream& print(std::ostream& os) const;
+    std::ofstream& print(std::ofstream& ofs) const;
+    std::istream& read(std::istream& is);
+    std::ifstream& read(std::ifstream& ifs);
+    friend std::istream& operator>>(std::istream& is, SalesManager& o);
+    friend std::ifstream& operator>>(std::ifstream& ifs, SalesManager& o);
 private:
     SalesManager(const SalesManager&);
     SalesManager& operator=(SalesManager&);
@@ -66,8 +74,8 @@ public:
     ~EmployeesArray();
     void add(const Employee *e);
     int total_salary() const;
-    friend std::ostream& operator<<(std::ostream& os, EmployeesArray& o);
-    friend std::ofstream& operator<<(std::ofstream& ofs, EmployeesArray& o);
+    friend std::ostream& operator<<(std::ostream& os, const EmployeesArray& o);
+    friend std::ofstream& operator<<(std::ofstream& ofs, const EmployeesArray& o);
     friend std::ifstream& operator>>(std::ifstream& ifs, EmployeesArray& o);
 private:
     Employee **_employees;
