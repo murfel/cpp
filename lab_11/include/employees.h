@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <iostream>
 
-using namespace std;
+//using namespace std;
 
 enum employees {DEVELOPER = 1, SALES_MANAGER};
 
@@ -12,10 +12,10 @@ class Employee {
 public:
     virtual ~Employee();
     virtual int salary() const = 0;
-    virtual ostream& print(ostream& os) = 0;
-    virtual ofstream& print(ofstream& os) = 0;
-    friend ostream& operator<<(ostream& os, Employee& o);
-    friend ofstream& operator<<(ofstream& ofs, Employee& o);
+    virtual std::ostream& print(std::ostream& os) = 0;
+    virtual std::ofstream& print(std::ofstream& os) = 0;
+    friend std::ostream& operator<<(std::ostream& os, Employee& o);
+    friend std::ofstream& operator<<(std::ofstream& ofs, Employee& o);
 protected:
     char *_name;
     int32_t _base_salary;
@@ -30,11 +30,13 @@ public:
         if (_has_bonus) { salary += 1000; }
         return salary;
     }
-    ostream& print(ostream& os);
-    ofstream& print(ofstream& ofs);
-    friend istream& operator>>(istream& is, Developer& o);
-    friend ifstream& operator>>(ifstream& ifs, Developer& o);
+    std::ostream& print(std::ostream& os);
+    std::ofstream& print(std::ofstream& ofs);
+    friend std::istream& operator>>(std::istream& is, Developer& o);
+    friend std::ifstream& operator>>(std::ifstream& ifs, Developer& o);
 private:
+    Developer(const Developer&);
+    Developer& operator=(Developer&);
     int32_t type;
     bool _has_bonus;
 };
@@ -46,11 +48,13 @@ public:
     int salary() const {
         return _base_salary + _sold_nm * _price * 0.01;
     }
-    ostream& print(ostream& os);
-    ofstream& print(ofstream& ofs);
-    friend istream& operator>>(istream& is, SalesManager& e);
-    friend ifstream& operator>>(ifstream& ifs, SalesManager& e);
+    std::ostream& print(std::ostream& os);
+    std::ofstream& print(std::ofstream& ofs);
+    friend std::istream& operator>>(std::istream& is, SalesManager& e);
+    friend std::ifstream& operator>>(std::ifstream& ifs, SalesManager& e);
 private:
+    SalesManager(const SalesManager&);
+    SalesManager& operator=(SalesManager&);
     int32_t type;
     int32_t _sold_nm, _price;
 };
@@ -62,9 +66,9 @@ public:
     ~EmployeesArray();
     void add(const Employee *e);
     int total_salary() const;
-    friend ostream& operator<<(ostream& os, EmployeesArray& o);
-    friend ofstream& operator<<(ofstream& ofs, EmployeesArray& o);
-    friend ifstream& operator>>(ifstream& ifs, EmployeesArray& o);
+    friend std::ostream& operator<<(std::ostream& os, EmployeesArray& o);
+    friend std::ofstream& operator<<(std::ofstream& ofs, EmployeesArray& o);
+    friend std::ifstream& operator>>(std::ifstream& ifs, EmployeesArray& o);
 private:
     Employee **_employees;
     int32_t _size;
@@ -72,9 +76,9 @@ private:
 };
 
 
-ostream& operator<<(ostream& os, Employee& o);
-ofstream& operator<<(ofstream& ofs, Employee& o);
+std::ostream& operator<<(std::ostream& os, Employee& o);
+std::ofstream& operator<<(std::ofstream& ofs, Employee& o);
 
-char * read_name(ifstream& ifs);
+char * read_name(std::ifstream& ifs);
 
 #endif

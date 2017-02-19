@@ -12,17 +12,17 @@ int main() {
 
     while(1) {
         cin >> s;
-        if (s.compare("load") == 0) {
+        if (s == "load") {
             cin >> s;
             ifstream f;
             f.open(s.c_str(), ios_base::binary);
             f >> employee_list;
             f.close();
         }
-        else if (s.compare("list") == 0) {
+        else if (s == "list") {
             cout << employee_list;
         }
-        else if (s.compare("add") == 0) {
+        else if (s == "add") {
             cin >> type;
             if (type == DEVELOPER) {
                 Developer * worker = new Developer();
@@ -38,14 +38,14 @@ int main() {
                 cout << "The type " << type << " is not recognized.";
             }
         }
-        else if (s.compare("save") == 0) {
+        else if (s == "save") {
             cin >> s;
             ofstream f;
             f.open(s.c_str(), ios_base::binary);
             f << employee_list;
             f.close();
         }
-        else if (s.compare("exit") == 0) {
+        else if (s == "exit") {
             break;
         }
         else {

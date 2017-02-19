@@ -55,6 +55,7 @@ Employee::~Employee() {
 
 Developer::Developer() {
     type = DEVELOPER;
+    _name = new char [1];
 }
 
 ostream& Developer::print(ostream& os) {
@@ -76,6 +77,7 @@ ofstream& Developer::print(ofstream& ofs) {
 
 SalesManager::SalesManager() {
     type = SALES_MANAGER;
+    _name = new char [1];
 }
 
 ostream& SalesManager::print(ostream& os) {
@@ -100,6 +102,7 @@ ofstream& SalesManager::print(ofstream& ofs) {
 istream& operator>>(istream& is, Developer& o) {
     string s;
     is >> s >> o._base_salary >> o._has_bonus;
+    delete[] o._name;
     o._name = new char [s.length() + 1];
     strcpy(o._name, s.c_str());
     return is;
@@ -118,6 +121,7 @@ char * read_name(ifstream& ifs) {
 }
 
 ifstream& operator>>(ifstream& ifs, Developer& o) {
+    delete[] o._name;
     o._name = read_name(ifs);
     ifs.read((char *)&o._base_salary, sizeof(o._base_salary));
     ifs.read((char *)&o._has_bonus, sizeof(o._has_bonus));
@@ -127,12 +131,14 @@ ifstream& operator>>(ifstream& ifs, Developer& o) {
 istream& operator>>(istream& is, SalesManager& o) {
     string s;
     is >> s >> o._base_salary >> o._sold_nm >> o._price;
+    delete[] o._name;
     o._name = new char [s.length() + 1];
     strcpy(o._name, s.c_str());
     return is;
 }
 
 ifstream& operator>>(ifstream& ifs, SalesManager& o) {
+    delete[] o._name;
     o._name = read_name(ifs);
     ifs.read((char *)&o._base_salary, sizeof(o._base_salary));
     ifs.read((char *)&o._sold_nm, sizeof(o._sold_nm));
