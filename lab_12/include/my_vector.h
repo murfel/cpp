@@ -54,8 +54,8 @@ std::ostream& operator<<(std::ostream& os, const my_vector<T>& o) {
 template <class T>
 void my_vector<T>::init(size_t n) {
     size_ = n;
-    capacity_ = (n == 0) ? INIT_CAPACITY : round(capacity_);
-    array_ = new T [capacity_];
+    capacity_ = (n == 0) ? INIT_CAPACITY : round(n);
+    array_ = (T*)new char [capacity_ * sizeof(T)];
 }
 
 template <class T>
@@ -71,7 +71,7 @@ my_vector<T>::my_vector(size_t n) {
 template <class T>
 my_vector<T>::my_vector(my_vector& other) {
     init(other.size());
-    for (int i = 0; i < size_; i++) {
+    for (size_t i = 0; i < size_; i++) {
         array_[i] = other[i];
     }
 }
@@ -79,13 +79,17 @@ my_vector<T>::my_vector(my_vector& other) {
 template <class T>
 my_vector<T>& my_vector<T>::operator=(my_vector& other) {
     resize(other.size());
-    for (int i = 0; i < size_; i++) {
+    for (size_t i = 0; i < size_; i++) {
         array_[i] = other[i];
     }
+    return *this;
 }
 
 template <class T>
 my_vector<T>::~my_vector() {
+    for (size_t i = 0; i < size_; i++) {
+        array_[i].~T();
+    }
     delete[] array_;
 }
 
@@ -113,8 +117,9 @@ void my_vector<T>::resize(size_t n) {
 template <class T>
 void my_vector<T>::reserve(size_t n) {
     if (capacity_ < n) {
-        T* temp = new T [round(n)];
-        for (int i = 0; i < size_; i++) {
+        capacity_ = round(n);
+        T* temp = (T*)new char [capacity_ * sizeof(T)];
+        for (size_t i = 0; i < size_; i++) {
             temp[i] = array_[i];
         }
         delete[] array_;
@@ -141,17 +146,48 @@ void my_vector<T>::push_back(T& t) {
 template <class T>
 void my_vector<T>::pop_back() {
     size_--;
+    array_[size_].~T();
 }
 
 template <class T>
 void my_vector<T>::clear() {
-    while (size_--) {
-        delete array_[size_ - 1];
+    for (size_t i = 0; i < size_; i++) {
+        array_[i].~T();
     }
+    size_ = 0;
 }
 
 template <typename T>
-void test_my_vector<T>(T& o1, T& o2) {
-    v = my_vector<T>();
+void test_my_vector(T o1, T o2) {
+    assert(round(1) == 1);
+    assert(round(4) == 4);
+    assert(round(5) == 8);
+
+    my_vector<T> v;
     assert(v.size() == 0);
+    assert(v.empty());
+
+    v.resize(2);
+    v[0] = o1;
+    v[1] = o2;
+    assert(v.size() == 2);
+    assert(v.capacity() >= v.size());
+    assert(!v.empty());
+
+    size_t old_size = v.size();
+    v.reserve(10);
+    assert(v.capacity() >= 10);
+    assert(v.size() == old_size);
+
+    v.push_back(o1);
+    assert(v.size() == old_size + 1);
+
+    v.pop_back();
+    assert(v.size() == old_size);
+
+    my_vector<T> v2(v);
+    assert(v2.size() == v.size());
+
+    v2.clear();
+    assert(v2.empty());
 }
