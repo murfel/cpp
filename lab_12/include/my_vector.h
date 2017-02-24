@@ -1,6 +1,7 @@
 #include <cstddef>
 #include <iostream>
 #include <typeinfo>
+#include <cassert>
 
 #define INIT_CAPACITY 4
 
@@ -149,8 +150,8 @@ void my_vector<T>::clear() {
     }
 }
 
-template <class T>
+template <typename T>
 void test_my_vector<T>(T& o1, T& o2) {
     v = my_vector<T>();
-    assert v.size() == 0;
+    assert(v.size() == 0);
 }
