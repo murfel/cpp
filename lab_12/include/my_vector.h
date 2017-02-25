@@ -24,7 +24,7 @@ public:
     T& operator[](size_t index) const;
     T& operator[](size_t index);
 
-    void push_back(T& t);
+    void push_back(const T& t);
     void pop_back();
     void clear();
 
@@ -138,7 +138,7 @@ T& my_vector<T>::operator[](size_t index) {
 }
 
 template <class T>
-void my_vector<T>::push_back(T& t) {
+void my_vector<T>::push_back(const T& t) {
     resize(size_ + 1);
     array_[size_ - 1] = t;
 }
