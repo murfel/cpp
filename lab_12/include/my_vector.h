@@ -99,7 +99,7 @@ my_vector<T>::~my_vector() {
     for (size_t i = 0; i < size_; i++) {
         array_[i].~T();
     }
-    delete[] array_;
+    operator delete[] (array_);
 }
 
 template <class T>
@@ -135,7 +135,7 @@ void my_vector<T>::reserve(size_t n) {
             new (temp + i) T(array_[i]);
             array_[i].~T();
         }
-        delete[] array_;
+        operator delete[] (array_);
         array_ = temp;
     }
 }
