@@ -23,6 +23,15 @@ public:
     Product(const Product& o) : quantity_(o.quantity()), price_(o.price()) {
         copy_name(o.name());
     }
+    Product& operator=(const Product& other) {
+        if (this != &other) {
+            delete[] name_;
+            copy_name(other.name());
+            quantity_ = other.quantity();
+            price_ = other.price();
+        }
+        return *this;
+    }
     ~Product() {
         delete[] name_;
     }
