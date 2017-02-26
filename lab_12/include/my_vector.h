@@ -1,9 +1,10 @@
+#pragma once
+
 #include <cstddef>
+#include <cassert>
 #include <iostream>
 #include <typeinfo>
-#include <cassert>
-
-#define INIT_CAPACITY 4
+#include <new>
 
 template <class T>
 class my_vector{
@@ -32,10 +33,13 @@ private:
     size_t capacity_;
     size_t size_;
     T* array_;
+    static const int INIT_CAPACITY = 4;
+    static size_t round_up_2(size_t n);
     void init(size_t n);
 };
 
-size_t round(size_t n) {
+template <class T>
+size_t my_vector<T>::round_up_2(size_t n) {
     size_t rounded = 1;
     while (rounded < n) {
         rounded *= 2;
@@ -54,8 +58,11 @@ std::ostream& operator<<(std::ostream& os, const my_vector<T>& o) {
 template <class T>
 void my_vector<T>::init(size_t n) {
     size_ = n;
-    capacity_ = (n == 0) ? INIT_CAPACITY : round(n);
-    array_ = (T*)new char [capacity_ * sizeof(T)];
+    capacity_ = (size_ == 0) ? INIT_CAPACITY : round_up_2(size_);
+    array_ = static_cast<T*>(operator new[] (capacity_ * sizeof(T)));
+    for (size_t i = 0; i < size_; i++) {
+        new (array_ + i) T();
+    }
 }
 
 template <class T>
@@ -70,9 +77,11 @@ my_vector<T>::my_vector(size_t n) {
 
 template <class T>
 my_vector<T>::my_vector(my_vector& other) {
-    init(other.size());
+    size_ = other.size();
+    capacity_ = (size_ == 0) ? INIT_CAPACITY : round_up_2(size_);
+    array_ = static_cast<T*>(operator new[] (capacity_ * sizeof(T)));
     for (size_t i = 0; i < size_; i++) {
-        array_[i] = other[i];
+        new (array_ + i) T(other[i]);
     }
 }
 
@@ -111,16 +120,20 @@ bool my_vector<T>::empty() const {
 template <class T>
 void my_vector<T>::resize(size_t n) {
     reserve(n);
+    for (size_t i = size_; i < n; i++) {
+        new (array_ + i) T();
+    }
     size_ = n;
 }
 
 template <class T>
 void my_vector<T>::reserve(size_t n) {
     if (capacity_ < n) {
-        capacity_ = round(n);
-        T* temp = (T*)new char [capacity_ * sizeof(T)];
+        capacity_ = round_up_2(n);
+        T* temp = static_cast<T*> (operator new[] (capacity_ * sizeof(T)));
         for (size_t i = 0; i < size_; i++) {
-            temp[i] = array_[i];
+            new (temp + i) T(array_[i]);
+            array_[i].~T();
         }
         delete[] array_;
         array_ = temp;
@@ -139,8 +152,9 @@ T& my_vector<T>::operator[](size_t index) {
 
 template <class T>
 void my_vector<T>::push_back(const T& t) {
-    resize(size_ + 1);
-    array_[size_ - 1] = t;
+    reserve(size_ + 1);
+    new (array_ + size_) T(t);
+    size_++;
 }
 
 template <class T>
@@ -155,39 +169,4 @@ void my_vector<T>::clear() {
         array_[i].~T();
     }
     size_ = 0;
-}
-
-template <typename T>
-void test_my_vector(T o1, T o2) {
-    assert(round(1) == 1);
-    assert(round(4) == 4);
-    assert(round(5) == 8);
-
-    my_vector<T> v;
-    assert(v.size() == 0);
-    assert(v.empty());
-
-    v.resize(2);
-    v[0] = o1;
-    v[1] = o2;
-    assert(v.size() == 2);
-    assert(v.capacity() >= v.size());
-    assert(!v.empty());
-
-    size_t old_size = v.size();
-    v.reserve(10);
-    assert(v.capacity() >= 10);
-    assert(v.size() == old_size);
-
-    v.push_back(o1);
-    assert(v.size() == old_size + 1);
-
-    v.pop_back();
-    assert(v.size() == old_size);
-
-    my_vector<T> v2(v);
-    assert(v2.size() == v.size());
-
-    v2.clear();
-    assert(v2.empty());
 }
