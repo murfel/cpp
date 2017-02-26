@@ -87,9 +87,13 @@ my_vector<T>::my_vector(my_vector& other) {
 
 template <class T>
 my_vector<T>& my_vector<T>::operator=(my_vector& other) {
-    resize(other.size());
-    for (size_t i = 0; i < size_; i++) {
-        array_[i] = other[i];
+    if (this != &other) {
+        clear();
+        reserve(other.size());
+        size_ = other.size();
+        for (size_t i = 0; i < size_; i++) {
+            new (array_ + i) T(other[i]);
+        }
     }
     return *this;
 }
