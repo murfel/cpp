@@ -1,4 +1,4 @@
-flags	= -Iinclude -std=c++98 -Wall -Wextra
+flags	= -Iinclude -std=c++03 -Wall -Wextra
 
 all: main
 main: bin/main.o
@@ -8,4 +8,4 @@ bin/main.o: src/main.cpp include/my_vector.h include/test.h
 	mkdir -p bin
 	g++ -g -c src/main.cpp -o bin/main.o $(flags)
 clean:
-	rm -r bin main
+	rm -rf bin main

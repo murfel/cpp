@@ -53,4 +53,10 @@ void test_my_vector(T o1, T o2) {
 
     v3[13] = o1;
     assert(v3[13] == o1);
+
+    v3.resize(5);
+    assert(v3.size() == 5);
+
+    const T& elem = v[0];
+    assert(elem == v[0]);
 }

@@ -9,8 +9,7 @@
 template <class T>
 class my_vector{
 public:
-    my_vector();
-    my_vector(size_t n);
+    my_vector(size_t n = 0);
     my_vector(my_vector& other);
     my_vector& operator=(my_vector& other);
     ~my_vector();
@@ -33,9 +32,8 @@ private:
     size_t capacity_;
     size_t size_;
     T* array_;
-    static const int INIT_CAPACITY = 4;
+    static const int INIT_CAPACITY = 1;
     static size_t round_up_2(size_t n);
-    void init(size_t n);
 };
 
 template <class T>
@@ -50,14 +48,16 @@ size_t my_vector<T>::round_up_2(size_t n) {
 template <class T>
 std::ostream& operator<<(std::ostream& os, const my_vector<T>& o) {
     for (size_t i = 0; i < o.size(); i++) {
-        os << o[i] << " ";
+        os << o[i];
+        if (i != o.size() - 1) {
+            os << " ";
+        }
     }
     return os;
 }
 
 template <class T>
-void my_vector<T>::init(size_t n) {
-    size_ = n;
+my_vector<T>::my_vector(size_t n) : size_(n) {
     capacity_ = (size_ == 0) ? INIT_CAPACITY : round_up_2(size_);
     array_ = static_cast<T*>(operator new[] (capacity_ * sizeof(T)));
     for (size_t i = 0; i < size_; i++) {
@@ -66,18 +66,7 @@ void my_vector<T>::init(size_t n) {
 }
 
 template <class T>
-my_vector<T>::my_vector() {
-    init(0);
-}
-
-template <class T>
-my_vector<T>::my_vector(size_t n) {
-    init(n);
-}
-
-template <class T>
-my_vector<T>::my_vector(my_vector& other) {
-    size_ = other.size();
+my_vector<T>::my_vector(my_vector& other) : size_(other.size()) {
     capacity_ = (size_ == 0) ? INIT_CAPACITY : round_up_2(size_);
     array_ = static_cast<T*>(operator new[] (capacity_ * sizeof(T)));
     for (size_t i = 0; i < size_; i++) {
@@ -124,8 +113,15 @@ bool my_vector<T>::empty() const {
 template <class T>
 void my_vector<T>::resize(size_t n) {
     reserve(n);
-    for (size_t i = size_; i < n; i++) {
-        new (array_ + i) T();
+    if (n < size_) {
+        for (size_t i = n; i < size_; i++) {
+            array_[i].~T();
+        }
+    }
+    else {
+        for (size_t i = size_; i < n; i++) {
+            new (array_ + i) T();
+        }
     }
     size_ = n;
 }
@@ -134,13 +130,13 @@ template <class T>
 void my_vector<T>::reserve(size_t n) {
     if (capacity_ < n) {
         capacity_ = round_up_2(n);
-        T* temp = static_cast<T*> (operator new[] (capacity_ * sizeof(T)));
+        T* new_array = static_cast<T*> (operator new[] (capacity_ * sizeof(T)));
         for (size_t i = 0; i < size_; i++) {
-            new (temp + i) T(array_[i]);
+            new (new_array + i) T(array_[i]);
             array_[i].~T();
         }
         operator delete[] (array_);
-        array_ = temp;
+        array_ = new_array;
     }
 }
 

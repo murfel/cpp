@@ -7,26 +7,17 @@
 
 class Product {
 public:
-    void copy_name(const char* name) {
-        if (name) {
-            name_ = new char [strlen(name) + 1];
-            strcpy(name_, name);
-        }
-        else {
-            name_ = NULL;
-        }
-    }
     Product() : name_(NULL), quantity_(0), price_(0) { };
     Product(const char* name, int quantity, double price) : quantity_(quantity), price_(price) {
-        copy_name(name);
+        set_name(name);
     }
     Product(const Product& o) : quantity_(o.quantity()), price_(o.price()) {
-        copy_name(o.name());
+        set_name(o.name());
     }
     Product& operator=(const Product& other) {
         if (this != &other) {
             delete[] name_;
-            copy_name(other.name());
+            set_name(other.name());
             quantity_ = other.quantity();
             price_ = other.price();
         }
@@ -51,12 +42,21 @@ private:
     char *name_;
     int quantity_;
     double price_;
+    void set_name(const char* name) {
+        if (name) {
+            name_ = new char [strlen(name) + 1];
+            strcpy(name_, name);
+        }
+        else {
+            name_ = NULL;
+        }
+    }
 };
 
 std::ostream& operator<<(std::ostream& os, Product& o) {
     os << std::string(o.name()) << " ";
     os << o.quantity() << " ";
-    os << o.price() << " ";
+    os << o.price();
     return os;
 }
 
