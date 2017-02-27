@@ -26,7 +26,7 @@ public:
     ~Product() {
         delete[] name_;
     }
-    char* name() const {
+    const char* name() const {
         return name_;
     }
     int quantity() const {
@@ -53,7 +53,7 @@ private:
     }
 };
 
-std::ostream& operator<<(std::ostream& os, Product& o) {
+std::ostream& operator<<(std::ostream& os, const Product& o) {
     os << std::string(o.name()) << " ";
     os << o.quantity() << " ";
     os << o.price();

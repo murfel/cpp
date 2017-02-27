@@ -10,8 +10,8 @@ template <class T>
 class my_vector{
 public:
     my_vector(size_t n = 0);
-    my_vector(my_vector& other);
-    my_vector& operator=(my_vector& other);
+    my_vector(const my_vector& other);
+    my_vector& operator=(const my_vector& other);
     ~my_vector();
 
     size_t size() const;
@@ -21,7 +21,7 @@ public:
     void resize(size_t n);
     void reserve(size_t n);
 
-    T& operator[](size_t index) const;
+    const T& operator[](size_t index) const;
     T& operator[](size_t index);
 
     void push_back(const T& t);
@@ -66,7 +66,7 @@ my_vector<T>::my_vector(size_t n) : size_(n) {
 }
 
 template <class T>
-my_vector<T>::my_vector(my_vector& other) : size_(other.size()) {
+my_vector<T>::my_vector(const my_vector& other) : size_(other.size()) {
     capacity_ = (size_ == 0) ? INIT_CAPACITY : round_up_2(size_);
     array_ = static_cast<T*>(operator new[] (capacity_ * sizeof(T)));
     for (size_t i = 0; i < size_; i++) {
@@ -75,7 +75,7 @@ my_vector<T>::my_vector(my_vector& other) : size_(other.size()) {
 }
 
 template <class T>
-my_vector<T>& my_vector<T>::operator=(my_vector& other) {
+my_vector<T>& my_vector<T>::operator=(const my_vector& other) {
     if (this != &other) {
         clear();
         reserve(other.size());
@@ -141,7 +141,7 @@ void my_vector<T>::reserve(size_t n) {
 }
 
 template <class T>
-T& my_vector<T>::operator[](size_t index) const {
+const T& my_vector<T>::operator[](size_t index) const {
     return array_[index];
 }
 
