@@ -66,7 +66,7 @@ private:
   };
 
 public:
-  my_array();
+  my_array() {}
   my_array(const my_array<bool, N>& o) {
     for (std::size_t i = 0; i < N; i++) {
       (*this)[i] = o[i];
@@ -76,15 +76,15 @@ public:
     assert(index < N);
     return Proxy(array_[index / 8], index % 8);
   }
-  const Proxy at(std::size_t index) const {
+  bool at(std::size_t index) const {
     assert(index < N);
-    return Proxy(array_[index / 8], index % 8);
+    return (array_[index / 8] >> (index % 8)) & 1;
   }
   Proxy operator[](std::size_t index) {
     return Proxy(array_[index / 8], index % 8);
   }
-  const Proxy operator[](std::size_t index) const {
-    return Proxy(array_[index / 8], index % 8);
+  bool operator[](std::size_t index) const {
+    return (array_[index / 8] >> (index % 8)) & 1;
   }
 
   bool empty() const {
