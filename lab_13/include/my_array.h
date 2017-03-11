@@ -3,24 +3,25 @@
 #include <cassert>
 #include <climits>
 #include <cstddef>
+#include <cstring>
 
 
 template<typename T, std::size_t N>
 class my_array {
 public:
-  T& at(std::size_t index) {
-    assert(index < N);
-    return array_[index];
-  }
-  const T& at(std::size_t index) const {
-    assert(index < N);
-    return array_[index];
-  }
   T& operator[](std::size_t index) {
     return array_[index];
   }
   const T& operator[](std::size_t index) const {
     return array_[index];
+  }
+  T& at(std::size_t index) {
+    assert(index < N);
+    return operator[](index);
+  }
+  const T& at(std::size_t index) const {
+    assert(index < N);
+    return operator[](index);
   }
 
   bool empty() const {
@@ -44,22 +45,19 @@ private:
 template<std::size_t N>
 class my_array<bool, N> {
 private:
-  class Proxy {
+  class proxy {
   public:
-    Proxy(unsigned char& data, std::size_t short_index) : data_(data), short_index_(short_index) {}
+    proxy(unsigned char& data, std::size_t short_index) : data_(data), short_index_(short_index) {}
     operator bool() const {
       return (data_ >> short_index_) & 1;
     }
-    Proxy& operator=(const bool val) {
-      data_ = data_ & ~(1 << short_index_);
+    proxy& operator=(const bool val) {
+      data_ &= ~(1 << short_index_);
       data_ = data_ | ((unsigned char)val << short_index_);
       return *this;
     }
-    Proxy& operator=(const Proxy& o) {
-      if (o != *this) {
-        *this = bool(o);
-      }
-      return *this;
+    proxy& operator=(const proxy& o) {
+      return *this = bool(o);
     }
   private:
     unsigned char& data_;
@@ -67,25 +65,23 @@ private:
   };
 
 public:
-  my_array() {}
-  my_array(const my_array<bool, N>& o) {
-    for (std::size_t i = 0; i < N; i++) {
-      (*this)[i] = o[i];
-    }
+  my_array() {
+    memset(array_, 0, blocks_);
   }
-  Proxy at(std::size_t index) {
+
+  proxy operator[](std::size_t index) {
+    return proxy(array_[get_block(index)], get_position(index));
+  }
+  bool operator[](std::size_t index) const {
+    return (array_[get_block(index)] >> get_position(index)) & 1;
+  }
+  proxy at(std::size_t index) {
     assert(index < N);
-    return Proxy(array_[index / CHAR_BIT], index % CHAR_BIT);
+    return operator[](index);
   }
   bool at(std::size_t index) const {
     assert(index < N);
-    return (array_[index / CHAR_BIT] >> (index % CHAR_BIT)) & 1;
-  }
-  Proxy operator[](std::size_t index) {
-    return Proxy(array_[index / CHAR_BIT], index % CHAR_BIT);
-  }
-  bool operator[](std::size_t index) const {
-    return (array_[index / CHAR_BIT] >> (index % CHAR_BIT)) & 1;
+    return operator[](index);
   }
 
   bool empty() const {
@@ -96,14 +92,17 @@ public:
   }
 
   void fill(const bool val) {
-    unsigned char wide_val = 0;
-    if (val) {
-      wide_val = ~wide_val;
-    }
-    for (std::size_t i = 0; i < (N - 1 + CHAR_BIT) / CHAR_BIT; i++) {
-      array_[i] = wide_val;
-    }
+    memset(array_, val, blocks_);
   }
 private:
-  unsigned char array_[(N - 1 + CHAR_BIT) / CHAR_BIT];
+  static const std::size_t blocks_ = (N - 1 + CHAR_BIT) / CHAR_BIT;
+  unsigned char array_[blocks_];
+
+  std::size_t get_block(std::size_t index) const {
+    return index / CHAR_BIT;
+  }
+
+  std::size_t get_position(std::size_t index) const {
+    return index % CHAR_BIT;
+  }
 };
