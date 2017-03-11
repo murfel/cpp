@@ -1,8 +1,9 @@
 #pragma once
 
-#include <cstddef>
 #include <cassert>
-#include <cstdint>
+#include <climits>
+#include <cstddef>
+
 
 template<typename T, std::size_t N>
 class my_array {
@@ -45,13 +46,13 @@ class my_array<bool, N> {
 private:
   class Proxy {
   public:
-    Proxy(uint8_t& data, std::size_t short_index) : data_(data), short_index_(short_index) {}
+    Proxy(unsigned char& data, std::size_t short_index) : data_(data), short_index_(short_index) {}
     operator bool() const {
       return (data_ >> short_index_) & 1;
     }
     Proxy& operator=(const bool val) {
       data_ = data_ & ~(1 << short_index_);
-      data_ = data_ | ((uint8_t)val << short_index_);
+      data_ = data_ | ((unsigned char)val << short_index_);
       return *this;
     }
     Proxy& operator=(const Proxy& o) {
@@ -61,7 +62,7 @@ private:
       return *this;
     }
   private:
-    uint8_t& data_;
+    unsigned char& data_;
     std::size_t short_index_;
   };
 
@@ -74,17 +75,17 @@ public:
   }
   Proxy at(std::size_t index) {
     assert(index < N);
-    return Proxy(array_[index / 8], index % 8);
+    return Proxy(array_[index / CHAR_BIT], index % CHAR_BIT);
   }
   bool at(std::size_t index) const {
     assert(index < N);
-    return (array_[index / 8] >> (index % 8)) & 1;
+    return (array_[index / CHAR_BIT] >> (index % CHAR_BIT)) & 1;
   }
   Proxy operator[](std::size_t index) {
-    return Proxy(array_[index / 8], index % 8);
+    return Proxy(array_[index / CHAR_BIT], index % CHAR_BIT);
   }
   bool operator[](std::size_t index) const {
-    return (array_[index / 8] >> (index % 8)) & 1;
+    return (array_[index / CHAR_BIT] >> (index % CHAR_BIT)) & 1;
   }
 
   bool empty() const {
@@ -95,14 +96,14 @@ public:
   }
 
   void fill(const bool val) {
-    uint8_t wide_val = 0;
+    unsigned char wide_val = 0;
     if (val) {
       wide_val = ~wide_val;
     }
-    for (std::size_t i = 0; i < (N + 7) / 8; i++) {
+    for (std::size_t i = 0; i < (N - 1 + CHAR_BIT) / CHAR_BIT; i++) {
       array_[i] = wide_val;
     }
   }
 private:
-  uint8_t array_[(N + 7) / 8];
+  unsigned char array_[(N - 1 + CHAR_BIT) / CHAR_BIT];
 };
