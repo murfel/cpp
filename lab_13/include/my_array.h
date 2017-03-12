@@ -53,7 +53,7 @@ private:
     }
     proxy& operator=(const bool val) {
       data_ &= ~(1 << short_index_);
-      data_ = data_ | ((unsigned char)val << short_index_);
+      data_ |= ((unsigned char)val << short_index_);
       return *this;
     }
     proxy& operator=(const proxy& o) {
