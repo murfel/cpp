@@ -27,6 +27,9 @@ void test_assign() {
   a[0] = T();
   a[0] = a[0];
   a[0] = ca[0];
+
+  a.fill(1);
+  assert(a[1] == 1);
 }
 
 class NonCopyable {

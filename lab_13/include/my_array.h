@@ -92,7 +92,7 @@ public:
   }
 
   void fill(const bool val) {
-    memset(array_, val, blocks_);
+    memset(array_, val ? ~0 : 0, blocks_);
   }
 private:
   static const std::size_t blocks_ = (N - 1 + CHAR_BIT) / CHAR_BIT;
