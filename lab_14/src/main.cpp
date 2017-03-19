@@ -1,6 +1,7 @@
 #include <string>
 #include <map>
 #include <iostream>
+#include <fstream>
 #include <cstdio>
 #include <cassert>
 
@@ -9,79 +10,62 @@
 using namespace std;
 
 int main(int, char **) {
-  std::string cmd, arg1, arg2, arg3, reg;
+  std::string cmd, reg1, reg2, fname;
   map<string, Matrix*> regs;
   int rows, cols, val, pos_i, pos_j;
+  fstream file;
 
   for (int i = 0; i < 10; ++i) {
     regs["$" + to_string(i)] = new Matrix(0, 0);
   }
-
-/*
-  // This works just fine.
-  while (1) {
-    cin >> cmd;
-    if (cmd == "exit") {
-      cout << "exiting!" << endl;
-      exit(0);
-    } else if (cmd == "foo") {
-      cout << "foobar!" << endl;
-    }
-  }
-*/
 
   while (1) {
     cin >> cmd;
     if (cmd == "exit") {
       break;
     } else if (cmd == "print") {
-      cin >> arg1;
-      for (size_t i = 0; i < regs[arg1]->get_rows(); ++i) {
-        for (size_t j = 0; j < regs[arg1]->get_cols(); ++j) {
-          cout << regs[arg1]->get(i, j) << " ";
+      cin >> reg1;
+      for (size_t i = 0; i < regs[reg1]->get_rows(); ++i) {
+        for (size_t j = 0; j < regs[reg1]->get_cols(); ++j) {
+          cout << regs[reg1]->get(i, j) << " ";
         }
         cout << endl;
       }
     } else if (cmd == "load") {
 
-      cin >> arg1 >> arg2;
-      delete regs[arg1];
+      cin >> reg1 >> fname;
+      delete regs[reg1];
 
-      freopen(arg2.c_str(), "r", stdin);
-      cin >> rows >> cols;
-      cerr << rows << " " << cols << endl;
-
-      regs[arg1] = new Matrix(rows, cols);
-      /*
+      file.open(fname, fstream::in);
+      file >> rows >> cols;
+      regs[reg1] = new Matrix(rows, cols);
       for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
-            cin >> val;
-            regs[arg1]->set(i, j, val);
+            file >> val;
+            regs[reg1]->set(i, j, val);
         }
       }
-      */
-      fclose(stdin);
-      cout << "loaded\n";
+      file.close();
     } else if (cmd == "add") {
-      cin >> arg1 >> arg2;
+      cin >> reg1 >> reg2;
       try {
-        *regs[arg1] += *regs[arg2];
+        *regs[reg1] += *regs[reg2];
       }
       catch (MatrixException& e) {
-        cout << e.what();
+        cout << e.what() << endl;
       }
     } else if (cmd == "mul") {
-      cin >> arg1 >> arg2;
+      cin >> reg1 >> reg2;
       try {
-        *regs[arg1] *= *regs[arg2];
+        *regs[reg1] *= *regs[reg2];
       }
       catch (MatrixException& e) {
         cout << e.what() << endl;
       }
     } else if (cmd == "elem") {
-      cin >> arg1 >> pos_i >> pos_j;
+      cin >> reg1 >> pos_i >> pos_j;
       try {
-        cout << regs[arg1]->get(pos_i, pos_j);
+        cout << regs[reg1]->get(pos_i, pos_j);
       }
       catch (MatrixException& e) {
         cout << e.what() << endl;

@@ -25,14 +25,12 @@ public:
   Matrix& operator+=(const Matrix& m);
   Matrix& operator*=(const Matrix& m);
 
-  Matrix& operator[](std::size_t i);
-  const Matrix& operator[](std::size_t i) const;
-
 private:
   std::size_t _rows;
   std::size_t _cols;
   int **_data;
   void init(std::size_t r, std::size_t c);
+  void free_memory();
 };
 
 

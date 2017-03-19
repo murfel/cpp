@@ -1,4 +1,5 @@
 #include "matrix.h"
+#include <iostream>
 
 void Matrix::init(std::size_t r, std::size_t c) {
   _rows = r;
@@ -32,11 +33,15 @@ Matrix::Matrix(const Matrix& m) {
   }
 }
 
-Matrix::~Matrix() {
+void Matrix::free_memory() {
   if (_rows != 0 && _cols != 0) {
-    delete _data[0];
+    delete[] _data[0];
+    delete[] _data;
   }
-  delete _data;
+}
+
+Matrix::~Matrix() {
+  free_memory();
 }
 
 std::size_t Matrix::get_rows() const { return _rows; }
@@ -54,8 +59,7 @@ int Matrix::get(std::size_t i, std::size_t j) const {
 }
 
 Matrix& Matrix::operator=(const Matrix& m) {
-  delete _data[0];
-  delete _data;
+  free_memory();
   init(m.get_rows(), m.get_cols());
   for (size_t i = 0; i < _rows; i++) {
     for (size_t j = 0; j < _cols; j++) {
@@ -78,12 +82,7 @@ Matrix& Matrix::operator+=(const Matrix& m) {
 }
 
 Matrix& Matrix::operator*=(const Matrix& m) {
-  Matrix result = operator*(m);
-  for (size_t i = 0; i < _rows; i++) {
-    for (size_t j = 0; j < _cols; j++) {
-      _data[i][j] = result.get(i, j);
-    }
-  }
+  *this = operator*(m);
   return *this;
 }
 
@@ -92,21 +91,26 @@ Matrix Matrix::operator*(const Matrix& m) const {
     throw MatrixException("MUL: #arg1.columns != #arg2.rows.");
   }
   Matrix result = Matrix(_rows, m.get_cols());
-  for (size_t i = 0; i < _rows; i++) {
-    for (size_t j = 0; j < _cols; j++) {
-      result.set(i, j, 0);
-      for (size_t t = 0; t < _cols; t++) {
-        result.set(i, j, result.get(i, j) + _data[i][t] * m.get(t, j));
+  if (_cols == 0) { // N x 0 times 0 x K
+    std::cerr << result.get_rows() << " " << result.get_cols() << std::endl;
+    /*
+    for (size_t i = 0; i < result.get_rows(); ++i) {
+      for (size_t j = 0; j < result.get_cols(); ++j) {
+        result.set(i, j, 0);
+      }
+    }
+    */
+    ;
+  }
+  else {
+    for (size_t i = 0; i < _rows; i++) {
+      for (size_t j = 0; j < _cols; j++) {
+        result.set(i, j, 0);
+        for (size_t t = 0; t < _cols; t++) {
+          result.set(i, j, result.get(i, j) + _data[i][t] * m.get(t, j));
+        }
       }
     }
   }
   return result;
-}
-
-Matrix& Matrix::operator[](std::size_t i) {
-  ;
-}
-
-const Matrix& Matrix::operator[](std::size_t i) const {
-  ;
 }
