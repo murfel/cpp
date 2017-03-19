@@ -12,7 +12,7 @@ using namespace std;
 int main(int, char **) {
   std::string cmd, reg1, reg2, fname;
   map<string, Matrix*> regs;
-  int rows, cols, val, pos_i, pos_j;
+  int rows, cols, val, row_index, col_index;
   fstream file;
 
   for (int i = 0; i < 10; ++i) {
@@ -63,9 +63,9 @@ int main(int, char **) {
         cout << e.what() << endl;
       }
     } else if (cmd == "elem") {
-      cin >> reg1 >> pos_i >> pos_j;
+      cin >> reg1 >> row_index >> col_index;
       try {
-        cout << regs[reg1]->get(pos_i, pos_j);
+        cout << regs[reg1]->get(row_index, col_index);
       }
       catch (MatrixException& e) {
         cout << e.what() << endl;
