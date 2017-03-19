@@ -1,0 +1,46 @@
+load $1 test/mtx1
+load $2 test/mtx2
+mul $1 $2
+print $1
+mul $1 $0
+
+
+5 6
+-9 -10
+MUL: #arg1.columns != #arg2.rows.
+
+--------
+load $1 test/mtx_Kx0
+load $2 test/mtx_0xN
+mul $1 $2
+print $1
+
+
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+
+-------
+load $1 test/mtx1
+load $2 test/mtx2
+add $2 $1
+print $2
+add $1 $0
+
+
+0 4
+6 0
+ADD: dimensions do not match.
+
+-----------
+load $1 test/mtx1
+elem $1 0 1
+elem $1 -2 0
+
+
+2
+ACCESS: bad index.
+
+
+-------------
+
