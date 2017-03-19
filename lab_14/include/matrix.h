@@ -17,12 +17,7 @@ public:
   std::size_t cols() const;
   void set(std::size_t row, std::size_t col, int val);
   int get(std::size_t row, std::size_t col) const;
-
   Matrix& operator=(const Matrix& other);
-
-  Matrix& operator+=(const Matrix& other);
-  Matrix& operator*=(const Matrix& other);
-
 private:
   std::size_t _rows;
   std::size_t _cols;
@@ -32,7 +27,8 @@ private:
 
 
 Matrix operator*(const Matrix& lhs, const Matrix& rhs);
-
+Matrix& operator+=(Matrix& lhs, const Matrix& rhs);
+Matrix& operator*=(Matrix& lhs, const Matrix& rhs);
 
 class MatrixException : public std::exception {
   private:

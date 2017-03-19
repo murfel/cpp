@@ -59,23 +59,6 @@ Matrix& Matrix::operator=(const Matrix& other) {
   return *this;
 }
 
-Matrix& Matrix::operator+=(const Matrix& other) {
-  if (_rows != other.rows() || _cols != other.cols()) {
-    throw MatrixException("ADD: dimensions do not match.");
-  }
-  for (std::size_t i = 0; i < _rows; ++i) {
-    for (std::size_t j = 0; j < _cols; ++j) {
-      _data[i][j] += other.get(i, j);
-    }
-  }
-  return *this;
-}
-
-Matrix& Matrix::operator*=(const Matrix& other) {
-  *this = operator*(*this, other);
-  return *this;
-}
-
 Matrix operator*(const Matrix& lhs, const Matrix& rhs) {
   if (lhs.cols() != rhs.rows()) {
     throw MatrixException("MUL: #arg1.columns != #arg2.rows.");
@@ -90,4 +73,20 @@ Matrix operator*(const Matrix& lhs, const Matrix& rhs) {
     }
   }
   return result;
+}
+
+Matrix& operator+=(Matrix& lhs, const Matrix& rhs) {
+  if (lhs.rows() != rhs.rows() || lhs.cols() != rhs.cols()) {
+    throw MatrixException("ADD: dimensions do not match.");
+  }
+  for (std::size_t i = 0; i < lhs.rows(); ++i) {
+    for (std::size_t j = 0; j < lhs.cols(); ++j) {
+      lhs.set(i, j, lhs.get(i, j) + rhs.get(i, j));
+    }
+  }
+  return lhs;
+}
+
+Matrix& operator*=(Matrix& lhs, const Matrix& rhs) {
+  return lhs = lhs * rhs;
 }

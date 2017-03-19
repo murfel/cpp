@@ -1,8 +1,7 @@
 load $1 test/mtx1
 load $2 test/mtx2
-mul $1 $2
-print $1
-mul $1 $0
+mul $2 $1
+print $2
 
 
 5 6
