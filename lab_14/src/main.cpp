@@ -27,8 +27,8 @@ int main(int, char **) {
         break;
       } else if (cmd == "print") {
         cin >> reg1;
-        for (size_t i = 0; i < regs[reg1]->get_rows(); ++i) {
-          for (size_t j = 0; j < regs[reg1]->get_cols(); ++j) {
+        for (size_t i = 0; i < regs[reg1]->rows(); ++i) {
+          for (size_t j = 0; j < regs[reg1]->cols(); ++j) {
             cout << regs[reg1]->get(i, j) << " ";
           }
           cout << endl;
@@ -56,7 +56,7 @@ int main(int, char **) {
         *regs[reg1] *= *regs[reg2];
       } else if (cmd == "elem") {
         cin >> reg1 >> row_index >> col_index;
-        cout << regs[reg1]->get(row_index, col_index);
+        cout << regs[reg1]->get(row_index, col_index) << endl;
       }
     }
     catch (MatrixException& e) {

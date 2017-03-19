@@ -1,32 +1,26 @@
 #include "matrix.h"
+#include <algorithm>
 
-void Matrix::init(std::size_t r, std::size_t c) {
-  _rows = r;
-  _cols = c;
-  if (r == 0 || c == 0) {
+Matrix::Matrix(std::size_t rows, std::size_t cols) : _rows(rows), _cols(cols) {
+  if (_rows == 0 || _cols == 0) {
     _data = NULL;
     return;
   }
   _data = new int*[_rows];
   int * temp = new int[_rows * _cols];
-  for (size_t i = 0; i < _rows; i++) {
+  for (std::size_t i = 0; i < _rows; ++i) {
     _data[i] = temp + i * _cols;
   }
-  for (size_t i = 0; i < _rows; i++) {
-    for (size_t j = 0; j < _cols; j++) {
+  for (std::size_t i = 0; i < _rows; ++i) {
+    for (std::size_t j = 0; j < _cols; ++j) {
       _data[i][j] = 0;
     }
   }
 }
 
-Matrix::Matrix(std::size_t r, std::size_t c) {
-  init(r, c);
-}
-
-Matrix::Matrix(const Matrix& other) {
-  init(other.get_rows(), other.get_cols());
-  for (size_t i = 0; i < _rows; i++) {
-    for (size_t j = 0; j < _cols; j++) {
+Matrix::Matrix(const Matrix& other) : Matrix(other.rows(), other.cols()) {
+  for (std::size_t i = 0; i < _rows; ++i) {
+    for (std::size_t j = 0; j < _cols; ++j) {
       _data[i][j] = other.get(i, j);
     }
   }
@@ -43,37 +37,34 @@ Matrix::~Matrix() {
   free_memory();
 }
 
-std::size_t Matrix::get_rows() const { return _rows; }
-std::size_t Matrix::get_cols() const { return _cols; }
+std::size_t Matrix::rows() const { return _rows; }
+std::size_t Matrix::cols() const { return _cols; }
 
-void Matrix::set(std::size_t i, std::size_t j, int val) {
-  _data[i][j] = val;
+void Matrix::set(std::size_t row, std::size_t col, int val) {
+  _data[row][col] = val;
 }
 
-int Matrix::get(std::size_t i, std::size_t j) const {
-  if (i >= _rows || j >= _cols) {
+int Matrix::get(std::size_t row, std::size_t col) const {
+  if (row >= _rows || col >= _cols) {
     throw MatrixException("ACCESS: bad index.");
   }
-  return _data[i][j];
+  return _data[row][col];
 }
 
 Matrix& Matrix::operator=(const Matrix& other) {
-  free_memory();
-  init(other.get_rows(), other.get_cols());
-  for (size_t i = 0; i < _rows; i++) {
-    for (size_t j = 0; j < _cols; j++) {
-      _data[i][j] = other.get(i, j);
-    }
-  }
+  Matrix new_matrix = Matrix(other);
+  std::swap(this->_rows, new_matrix._rows);
+  std::swap(this->_cols, new_matrix._cols);
+  std::swap(this->_data, new_matrix._data);
   return *this;
 }
 
 Matrix& Matrix::operator+=(const Matrix& other) {
-  if (_rows != other.get_rows() || _cols != other.get_cols()) {
-    throw MatrixException("ADD: dimensions do not match");
+  if (_rows != other.rows() || _cols != other.cols()) {
+    throw MatrixException("ADD: dimensions do not match.");
   }
-  for (size_t i = 0; i < _rows; i++) {
-    for (size_t j = 0; j < _cols; j++) {
+  for (std::size_t i = 0; i < _rows; ++i) {
+    for (std::size_t j = 0; j < _cols; ++j) {
       _data[i][j] += other.get(i, j);
     }
   }
@@ -81,20 +72,20 @@ Matrix& Matrix::operator+=(const Matrix& other) {
 }
 
 Matrix& Matrix::operator*=(const Matrix& other) {
-  *this = operator*(other);
+  *this = operator*(*this, other);
   return *this;
 }
 
-Matrix Matrix::operator*(const Matrix& other) const {
-  if (_cols != other.get_rows()) {
+Matrix operator*(const Matrix& lhs, const Matrix& rhs) {
+  if (lhs.cols() != rhs.rows()) {
     throw MatrixException("MUL: #arg1.columns != #arg2.rows.");
   }
-  Matrix result = Matrix(_rows, other.get_cols());
-  for (size_t i = 0; i < _rows; i++) {
-    for (size_t j = 0; j < _cols; j++) {
+  Matrix result = Matrix(lhs.rows(), rhs.cols());
+  for (std::size_t i = 0; i < result.rows(); ++i) {
+    for (std::size_t j = 0; j < result.cols(); ++j) {
       result.set(i, j, 0);
-      for (size_t t = 0; t < _cols; t++) {
-        result.set(i, j, result.get(i, j) + _data[i][t] * other.get(t, j));
+      for (std::size_t t = 0; t < lhs.cols(); ++t) {
+        result.set(i, j, result.get(i, j) + lhs.get(i, t) * rhs.get(t, j));
       }
     }
   }

@@ -9,29 +9,29 @@
 
 class Matrix {
 public:
-  Matrix(std::size_t r, std::size_t c);
-  Matrix(const Matrix& m);
+  Matrix(std::size_t rows, std::size_t cols);
+  Matrix(const Matrix& other);
   ~Matrix();
 
-  std::size_t get_rows() const;
-  std::size_t get_cols() const;
-  void set(std::size_t i, std::size_t j, int val);
-  int get(std::size_t i, std::size_t j) const;
+  std::size_t rows() const;
+  std::size_t cols() const;
+  void set(std::size_t row, std::size_t col, int val);
+  int get(std::size_t row, std::size_t col) const;
 
-  Matrix& operator=(const Matrix& m);
+  Matrix& operator=(const Matrix& other);
 
-  Matrix operator*(const Matrix& m) const;
-
-  Matrix& operator+=(const Matrix& m);
-  Matrix& operator*=(const Matrix& m);
+  Matrix& operator+=(const Matrix& other);
+  Matrix& operator*=(const Matrix& other);
 
 private:
   std::size_t _rows;
   std::size_t _cols;
   int **_data;
-  void init(std::size_t r, std::size_t c);
   void free_memory();
 };
+
+
+Matrix operator*(const Matrix& lhs, const Matrix& rhs);
 
 
 class MatrixException : public std::exception {
