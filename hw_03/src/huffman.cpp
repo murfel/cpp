@@ -1,73 +1,15 @@
 #include "huffman.h"
 #include <bits/stdc++.h>
 
-void HuffTree::build_code(int index, std::string s) {
-    if (tree[index].code < 256) {
-        symbol_to_code[tree[index].code] = s;
+void HuffTree::build_code(size_t index, std::string s) {
+    if (index == static_cast<std::size_t>(-1)) { index = root; s = ""; }
+    if (tree[index].left == static_cast<std::size_t>(-1)) {
+        symbol_to_code[tree[index].symbol] = s;
     }
     else {
-        s += "0";
-        build_code(tree[index].left, s);
-        s.pop_back();
-        s += "1";
-        build_code(tree[index].right, s);
-        s.pop_back();
+        build_code(tree[index].left, s + "0");
+        build_code(tree[index].right, s + "1");
     }
-}
-
-HuffmanArchiver::HuffmanArchiver(std::string input_file) : input_file_(input_file) {
-    std::vector<int> frequncy_count(256, 0);
-    std::ifstream ifs(input_file.c_str());
-    char c;
-    while (ifs.get(c)) {
-        frequncy_count[static_cast<unsigned char>(c)]++;
-    }
-    ifs.close();
-    tree_.tree.resize(frequncy_count.size());
-    for (size_t i = 0; i < frequncy_count.size(); ++i) {
-        if (frequncy_count[i]) {
-            tree_.tree[i] = {-1, -1, -1, i};
-        }
-    }
-    std::set<std::pair<int, int>> s;
-    for (size_t i = 0; i < frequncy_count.size(); ++i) {
-        if (frequncy_count[i]) {
-            s.insert({frequncy_count[i], i});
-        }
-    }
-    while (s.size() != 1) {
-        std::pair<int, int> min1 = *s.begin();
-        s.erase(s.begin());
-        std::pair<int, int> min2 = *s.begin();
-        s.erase(s.begin());
-        TreeNode node = {-1, min1.second, min2.second, frequncy_count.size()};
-        tree_.tree.push_back(node);
-        tree_.tree[node.left].parent = node.code;
-        tree_.tree[node.right].parent = node.code;
-        s.insert({min1.first + min2.first, node.code});
-        frequncy_count.push_back(min1.first + min2.first);
-    }
-    tree_.root = (*s.begin()).second;
-    tree_.build_code(tree_.root, "");
-    for (auto i : tree_.symbol_to_code) {
-        std::cerr << i.first << " " << i.second << std::endl;
-    }
-}
-
-void HuffmanArchiver::save(std::string output_file) {
-    std::ofstream ofs(output_file.c_str());
-    BinaryOfstream bofs(ofs);
-
-    std::ifstream ifs(input_file_.c_str());
-    char c;
-    while (ifs.get(c)) {
-        bofs << tree_.symbol_to_code[static_cast<unsigned char>(c)];
-        std::cerr << tree_.symbol_to_code[static_cast<unsigned char>(c)] << " ";
-    }
-    std::cerr << std::endl;
-    bofs.flush();
-    ifs.close();
-    ofs.close();
 }
 
 BinaryOfstream& BinaryOfstream::operator<<(std::string s) {
@@ -89,8 +31,59 @@ void BinaryOfstream::flush() {
     buffer_ = 0;
 }
 
+void compress(std::string input_file, std::string output_file) {
+    std::vector<int> frequencies(256, 0);
+    std::ifstream ifs(input_file.c_str());
+    char c;
+    while (ifs.get(c)) {
+        frequencies[static_cast<unsigned char>(c)]++;
+    }
+    ifs.close();
+    HuffTree tree;
+    std::priority_queue<std::pair<int, int>> new_frequencies;
+    for (size_t i = 0; i < frequencies.size(); ++i) {
+        if (frequencies[i]) {
+            tree.insert_node(-1, -1, -1, i);
+            new_frequencies.push({frequencies[i], i});
+        }
+    }
+    while (new_frequencies.size() != 1) {
+        std::pair<int, int> min1 = new_frequencies.top();
+        new_frequencies.pop();
+        std::pair<int, int> min2 = new_frequencies.top();
+        new_frequencies.pop();
+        tree.insert_node(-1, min1.second, min2.second, frequencies.size());
+        new_frequencies.push({min1.first + min2.first, frequencies.size()});
+        frequencies.push_back(min1.first + min2.first);
+    }
+    tree.set_root(new_frequencies.top().second);
+    tree.build_code();
 
 
+
+
+
+//    for (auto i : tree_.symbol_to_code) {
+//        std::cerr << i.first << " " << i.second << std::endl;
+//    }
+//    std::ofstream ofs(output_file.c_str());
+//    BinaryOfstream bofs(ofs);
+//
+//    std::ifstream ifs(input_file.c_str());
+//    while (ifs.get(c)) {
+//        bofs << tree_.symbol_to_code[static_cast<unsigned char>(c)];
+//        std::cerr << tree_.symbol_to_code[static_cast<unsigned char>(c)] << " ";
+//    }
+//    std::cerr << std::endl;
+//    bofs.flush();
+//    ifs.close();
+//    ofs.close();
+}
+
+
+void decompress(std::string input_file, std::string output_file) {
+    ;
+}
 
 
 

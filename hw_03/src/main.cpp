@@ -7,7 +7,16 @@
 #include <string>
 #include <cstring>
 
-int main(int argc, char ** argv) {
+struct CLI_Arguments {
+    CLI_Arguments() {};
+    CLI_Arguments(bool archive, std::string input_file, std::string output_file)
+            : archive(archive), input_file(input_file), output_file(output_file) {};
+    bool archive;
+    std::string input_file;
+    std::string output_file;
+};
+
+CLI_Arguments parse_args(int argc, char ** argv) {
     bool archiving = false;
     bool dearchiving = false;
     bool input_file_specified = false;
@@ -32,7 +41,7 @@ int main(int argc, char ** argv) {
             }
             output_file = argv[++i];
         } else {
-            std::cerr << "Ignoring unknown argument: " << argv[i] << std::endl;
+            throw std::runtime_error("Unknown argument: " + std::string(argv[i]));
         }
     }
 
@@ -48,29 +57,59 @@ int main(int argc, char ** argv) {
     if (!output_file_specified) {
         throw std::runtime_error("No output file is specified.");
     }
+    return CLI_Arguments(archiving, input_file, output_file);
+}
 
-    if (archiving) {
-        ;
+
+int main(int argc, char ** argv) {
+    CLI_Arguments args;
+    try {
+         args = parse_args(argc, argv);
+    } catch (std::runtime_error& e) {
+        std::cout << e.what() << std::endl;
+        exit(1);
     }
 
-    HuffmanArchiver ha(input_file);
-    ha.save("output.txt");
+    std::cerr << args.archive << " " << args.input_file << " " << args.output_file << std::endl;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    if (args.archive) {
+        compress(args.input_file, args.output_file);
+    }
+    else {
+        decompress(args.input_file, args.output_file);
+    }
 
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
