@@ -70,8 +70,6 @@ int main(int argc, char ** argv) {
         exit(1);
     }
 
-    std::cerr << args.archive << " " << args.input_file << " " << args.output_file << std::endl;
-
     if (args.archive) {
         compress(args.input_file, args.output_file);
     }
