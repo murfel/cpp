@@ -34,7 +34,7 @@ private:
 
 class BinaryIfstream {
 public:
-    BinaryIfstream(std::ifstream& ifs) : ifs_(ifs), buffer_(0), counter_(0), eof_(0) {};
+    BinaryIfstream(std::ifstream& ifs) : ifs_(ifs), counter_(8), eof_(0) {};
     BinaryIfstream& operator>>(bool & input);
     operator bool() { return !eof_; }
 private:

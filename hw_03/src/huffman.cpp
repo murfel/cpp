@@ -20,15 +20,16 @@ BinaryOfstream& BinaryOfstream::operator<<(std::vector<bool> output) {
     return *this;
 }
 
-
 BinaryIfstream& BinaryIfstream::operator>>(bool & input) {
     if (counter_ == 8) {
-        ifs_ >> buffer_;
+        ifs_.read(reinterpret_cast<char *>(&buffer_), 1);
+        counter_ = 0;
         if (ifs_.eof()) {
             eof_ = 1;
         }
     }
     input = (buffer_ >> counter_) & 1;
+    ++counter_;
     return *this;
 }
 
@@ -91,6 +92,7 @@ std::string HuffTree::get_string_code_of(int symbol) const {
     return code;
 }
 
+
 void compress(std::string input_file, std::string output_file) {
     std::vector<int> frequencies(256, 0);
     std::ifstream ifs(input_file.c_str());
@@ -117,48 +119,28 @@ void compress(std::string input_file, std::string output_file) {
     }
 }
 
+
 void decompress(std::string input_file, std::string output_file) {
     std::ifstream ifs(input_file.c_str());
     std::vector<int> frequencies(256);
     for (std::size_t i = 0; i < frequencies.size(); ++i) {
-        ifs >> frequencies[i];
-        if (frequencies[i]) std::cerr << frequencies[i] << "\n";
+        ifs.read(reinterpret_cast<char *>(&frequencies[i]), sizeof(int));
     }
-//    int count;
-//    ifs >> count;
-//    HuffTree tree(frequencies);
-//    tree.build_code();
-//    BinaryIfstream bifs(ifs);
-//    std::ofstream ofs(output_file.c_str());
-//    int cur = tree.get_root();
-//    std::cerr << count << "\n";
-//    while (bifs && count) {
-//        bool bit;
-//        bifs >> bit;
-//        if (tree.get_child(cur, bit) == -1) {
-//            ofs.write(reinterpret_cast<char *>(&cur), 1);
-//            cur = tree.get_root();
-//        }
-//        else {
-//            cur = tree.get_child(cur, bit);
-//        }
-//    }
+    int count;
+    ifs.read(reinterpret_cast<char *>(&count), sizeof(int));
+    HuffTree tree(frequencies);
+    tree.build_code();
+    BinaryIfstream bifs(ifs);
+    std::ofstream ofs(output_file.c_str());
+    int cur = tree.get_root();
+    while (bifs && count) {
+        bool bit;
+        bifs >> bit;
+        if (tree.get_child(cur, bit) == -1) {
+            ofs.write(reinterpret_cast<char *>(&cur), 1);
+            cur = tree.get_root();
+            --count;
+        }
+        cur = tree.get_child(cur, bit);
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
