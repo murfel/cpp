@@ -117,6 +117,9 @@ void compress(std::string input_file, std::string output_file) {
     while (ifs.get(c)) {
         bofs << tree.get_code_of(c);
     }
+    std::cout << file_size << std::endl;
+    std::cout << static_cast<int>(ofs.tellp()) + 1 << std::endl;
+    std::cout << 256 * sizeof(int) + sizeof(int) << std::endl;
 }
 
 
@@ -143,4 +146,8 @@ void decompress(std::string input_file, std::string output_file) {
         }
         cur = tree.get_child(cur, bit);
     }
+    int extra_info = 256 * sizeof(int) + sizeof(int);
+    std::cout << static_cast<int>(ifs.tellg()) - extra_info << std::endl;
+    std::cout << static_cast<int>(ofs.tellp()) << std::endl;
+    std::cout << extra_info << std::endl;
 }
