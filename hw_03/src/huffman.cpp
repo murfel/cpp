@@ -72,6 +72,22 @@ std::vector<bool> HuffTree::get_code_of(int symbol) const {
     return it->second;
 }
 
+HuffTree::Iterator& HuffTree::Iterator::operator+=(bool bit) {
+    position_ = bit ? tree_.tree_[position_].right : tree_.tree_[position_].left;
+    return *this;
+}
+
+int HuffTree::Iterator::operator*() const {
+    if (is_leaf()) {
+        return position_;
+    }
+    throw std::runtime_error("Cannot dereference the iterator. It does not point to a leaf.");
+}
+
+bool HuffTree::Iterator::is_leaf() const {
+    return tree_.tree_[position_].left != -1;
+}
+
 void HuffTree::start_building_codes() {
     build_code(root_, std::vector<bool>());
 }

@@ -44,6 +44,16 @@ public:
     int get_child(int index, bool right) const;
     int get_root() const { return root_; }
     std::vector<bool> get_code_of(int symbol) const;
+    class Iterator {
+    public:
+        Iterator(HuffTree & tree) : tree_(tree), position_(tree.root_) {};
+        Iterator & operator+=(bool bit);
+        int operator*() const;
+        bool is_leaf() const;
+    private:
+        HuffTree & tree_;
+        int position_;
+    };
 private:
     void start_building_codes();
     void build_code(int index, std::vector<bool> code);
