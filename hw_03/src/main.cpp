@@ -9,8 +9,10 @@
 
 #include "gtest/gtest.h"
 
+enum action_t { archive, dearchive };
+
 struct CliArguments {
-    bool archive;
+    action_t action;
     std::string input_file;
     std::string output_file;
 };
@@ -55,7 +57,8 @@ CliArguments parse_args(int argc, char ** argv) {
     if (!output_file_specified) {
         throw std::runtime_error("No output file is specified.");
     }
-    args.archive = archiving;
+
+    args.action = archiving ? archive : dearchive;
     return args;
 }
 
@@ -70,21 +73,26 @@ int main(int argc, char ** argv) {
     }
 
     statistics_t statistics;
-    if (args.archive) {
-        std::ifstream ifs(args.input_file.c_str());
-        std::ofstream ofs(args.output_file.c_str());
-        compress(ifs, ofs, statistics);
-        std::cout << statistics.source_size << std::endl;
-        std::cout << statistics.compressed_size << std::endl;
-        std::cout << statistics.EXTRA_INFO << std::endl;
-    }
-    else {
-        std::ifstream ifs(args.input_file.c_str());
-        std::ofstream ofs(args.output_file.c_str());
-        decompress(ifs, ofs, statistics);
-        std::cout << statistics.decompressed_size << std::endl;
-        std::cout << statistics.compressed_size << std::endl;
-        std::cout << statistics.EXTRA_INFO << std::endl;
+    try {
+        if (args.action == archive) {
+                std::ifstream ifs(args.input_file.c_str());
+                std::ofstream ofs(args.output_file.c_str());
+                compress(ifs, ofs, statistics);
+                std::cout << statistics.source_size << std::endl;
+                std::cout << statistics.compressed_size << std::endl;
+                std::cout << statistics.EXTRA_INFO << std::endl;
+        }
+        else {
+            std::ifstream ifs(args.input_file.c_str());
+            std::ofstream ofs(args.output_file.c_str());
+            decompress(ifs, ofs, statistics);
+            std::cout << statistics.decompressed_size << std::endl;
+            std::cout << statistics.compressed_size << std::endl;
+            std::cout << statistics.EXTRA_INFO << std::endl;
+        }
+    } catch (const std::exception & e) {
+        std::cout << e.what() << std::endl;
+        return 1;
     }
 
     return 0;

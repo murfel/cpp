@@ -29,7 +29,6 @@ class BinaryIstream {
 public:
     BinaryIstream(std::istream& is) : is_(is), counter_(8), eof_(0) {};
     BinaryIstream& operator>>(bool & input);
-    operator bool() { return !eof_; }
 private:
     std::istream& is_;
     std::int8_t buffer_;

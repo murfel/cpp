@@ -24,6 +24,9 @@ BinaryOstream& BinaryOstream::operator<<(std::vector<bool> output) {
 }
 
 BinaryIstream& BinaryIstream::operator>>(bool & input) {
+    if (eof_) {
+        throw std::runtime_error("EOF reached.");
+    }
     if (counter_ == 8) {
         is_.read(reinterpret_cast<char *>(&buffer_), 1);
         counter_ = 0;
