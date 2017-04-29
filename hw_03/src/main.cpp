@@ -7,16 +7,18 @@
 #include <string>
 #include <cstring>
 
-struct CLI_Arguments {
-    CLI_Arguments() {};
-    CLI_Arguments(bool archive, std::string input_file, std::string output_file)
+#include "gtest/gtest.h"
+
+struct CliArguments {
+    CliArguments() {};
+    CliArguments(bool archive, std::string input_file, std::string output_file)
             : archive(archive), input_file(input_file), output_file(output_file) {};
     bool archive;
     std::string input_file;
     std::string output_file;
 };
 
-CLI_Arguments parse_args(int argc, char ** argv) {
+CliArguments parse_args(int argc, char ** argv) {
     bool archiving = false;
     bool dearchiving = false;
     bool input_file_specified = false;
@@ -57,12 +59,12 @@ CLI_Arguments parse_args(int argc, char ** argv) {
     if (!output_file_specified) {
         throw std::runtime_error("No output file is specified.");
     }
-    return CLI_Arguments(archiving, input_file, output_file);
+    return CliArguments(archiving, input_file, output_file);
 }
 
 
 int main(int argc, char ** argv) {
-    CLI_Arguments args;
+    CliArguments args;
     try {
          args = parse_args(argc, argv);
     } catch (std::runtime_error& e) {
@@ -70,17 +72,26 @@ int main(int argc, char ** argv) {
         exit(1);
     }
 
+    statistics_t statistics;
     if (args.archive) {
-        compress(args.input_file, args.output_file);
+        std::ifstream ifs(args.input_file.c_str());
+        std::ofstream ofs(args.output_file.c_str());
+        compress(ifs, ofs, statistics);
+        std::cout << statistics.source_size << std::endl;
+        std::cout << statistics.compressed_size << std::endl;
+        std::cout << statistics.EXTRA_INFO << std::endl;
     }
     else {
-        decompress(args.input_file, args.output_file);
+        std::ifstream ifs(args.input_file.c_str());
+        std::ofstream ofs(args.output_file.c_str());
+        decompress(ifs, ofs, statistics);
+        std::cout << statistics.decompressed_size << std::endl;
+        std::cout << statistics.compressed_size << std::endl;
+        std::cout << statistics.EXTRA_INFO << std::endl;
     }
 
     return 0;
 }
-
-
 
 
 

@@ -1,18 +1,30 @@
 #pragma once
-#include <bits/stdc++.h>
+
+#include <iostream>
+#include <vector>
+#include <unordered_map>
 #include <cstdint>
+
+struct statistics_t {
+    int32_t source_size;
+    int32_t compressed_size;
+    int32_t decompressed_size;
+    static const int32_t EXTRA_INFO = 256 * sizeof(int32_t) + sizeof(int32_t);
+};
+
 
 class HuffTree {
 public:
-    HuffTree(std::vector<int> & frequencies);
-    void build_code(int index = -1, std::vector<bool> code = std::vector<bool>());
+    HuffTree(std::vector<int32_t> frequencies);
     std::vector<bool> get_code_of(int symbol) const;
-    std::string get_string_code_of(int symbol) const;
     int get_child(int index, bool right) const;
     int get_root() const { return root_; }
 private:
+    void start_building_codes();
+    void build_code(int index, std::vector<bool> code);
     struct TreeNode {
-        int parent;
+        TreeNode() {};
+        TreeNode(int left, int right) : left(left), right(right) {};
         int left;
         int right;
     };
@@ -21,29 +33,30 @@ private:
     std::unordered_map<int, std::vector<bool>> symbol_to_code_;
 };
 
-class BinaryOfstream {
+class BinaryOstream {
 public:
-    BinaryOfstream(std::ofstream& ofs) : ofs_(ofs), buffer_(0), counter_(0) {};
-    ~BinaryOfstream();
-    BinaryOfstream& operator<<(std::vector<bool> output);
+    BinaryOstream(std::ostream& os) : os_(os), buffer_(0), counter_(0) {};
+    ~BinaryOstream();
+    BinaryOstream& operator<<(std::vector<bool> output);
 private:
-    std::ofstream& ofs_;
+    std::ostream& os_;
     std::int8_t buffer_;
     int counter_;
 };
 
-class BinaryIfstream {
+class BinaryIstream {
 public:
-    BinaryIfstream(std::ifstream& ifs) : ifs_(ifs), counter_(8), eof_(0) {};
-    BinaryIfstream& operator>>(bool & input);
+    BinaryIstream(std::istream& is) : is_(is), counter_(8), eof_(0) {};
+    BinaryIstream& operator>>(bool & input);
     operator bool() { return !eof_; }
 private:
-    std::ifstream& ifs_;
+    std::istream& is_;
     std::int8_t buffer_;
     int counter_;
     bool eof_;
 };
 
 
-void compress(std::string input_file, std::string output_file);
-void decompress(std::string input_file, std::string output_file);
+void compress(std::istream & is, std::ostream & os, statistics_t statistics);
+void decompress(std::istream & is, std::ostream & os, statistics_t statistics);
+

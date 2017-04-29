@@ -1,17 +1,20 @@
 #include "huffman.h"
-#include <bits/stdc++.h>
 #include <ios>
+#include <queue>
 
-BinaryOfstream::~BinaryOfstream() {
+using std::cerr;
+using std::endl;
+
+BinaryOstream::~BinaryOstream() {
     if (counter_) {
-        ofs_.write(reinterpret_cast<char *>(&buffer_), 1);
+        os_.write(reinterpret_cast<char *>(&buffer_), 1);
     }
 }
 
-BinaryOfstream& BinaryOfstream::operator<<(std::vector<bool> output) {
+BinaryOstream& BinaryOstream::operator<<(std::vector<bool> output) {
     for (std::size_t i = 0; i < output.size(); ++i) {
         if (counter_ == 8) {
-            ofs_.write(reinterpret_cast<char *>(&buffer_), 1);
+            os_.write(reinterpret_cast<char *>(&buffer_), 1);
             counter_ = 0;
             buffer_ = 0;
         }
@@ -20,11 +23,11 @@ BinaryOfstream& BinaryOfstream::operator<<(std::vector<bool> output) {
     return *this;
 }
 
-BinaryIfstream& BinaryIfstream::operator>>(bool & input) {
+BinaryIstream& BinaryIstream::operator>>(bool & input) {
     if (counter_ == 8) {
-        ifs_.read(reinterpret_cast<char *>(&buffer_), 1);
+        is_.read(reinterpret_cast<char *>(&buffer_), 1);
         counter_ = 0;
-        if (ifs_.eof()) {
+        if (is_.eof()) {
             eof_ = 1;
         }
     }
@@ -34,12 +37,12 @@ BinaryIfstream& BinaryIfstream::operator>>(bool & input) {
 }
 
 
-HuffTree::HuffTree(std::vector<int> & frequencies) {
+HuffTree::HuffTree(std::vector<int32_t> frequencies) {
     tree_.resize(frequencies.size());
     std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::greater<std::pair<int, int>>> new_frequencies;
     for (size_t i = 0; i < frequencies.size(); ++i) {
         if (frequencies[i]) {
-            tree_[i] = {-1, -1, -1};
+            tree_[i] = TreeNode(-1, -1);
             new_frequencies.push({frequencies[i], i});
         }
     }
@@ -48,15 +51,20 @@ HuffTree::HuffTree(std::vector<int> & frequencies) {
         new_frequencies.pop();
         std::pair<int, int> min2 = new_frequencies.top();
         new_frequencies.pop();
-        tree_.push_back({-1, min1.second, min2.second});
-        new_frequencies.push({min1.first + min2.first, frequencies.size()});
+        tree_.push_back(TreeNode(min1.second, min2.second));
         frequencies.push_back(min1.first + min2.first);
+        new_frequencies.push({frequencies.back(), tree_.size() - 1});
+
     }
     root_ = new_frequencies.top().second;
+    start_building_codes();
+}
+
+void HuffTree::start_building_codes() {
+    build_code(root_, std::vector<bool>());
 }
 
 void HuffTree::build_code(int index, std::vector<bool> code) {
-    if (index == -1) { index = root_; code = std::vector<bool>(); }
     if (tree_[index].left == -1) {
         symbol_to_code_[index] = code;
     }
@@ -84,70 +92,51 @@ std::vector<bool> HuffTree::get_code_of(int symbol) const {
     return (*symbol_to_code_.find(symbol)).second;
 }
 
-std::string HuffTree::get_string_code_of(int symbol) const {
-    std::string code = "";
-    for (auto i : (*symbol_to_code_.find(symbol)).second) {
-        code += (i ? "1" : "0");
-    }
-    return code;
-}
 
-
-void compress(std::string input_file, std::string output_file) {
-    std::vector<int> frequencies(256, 0);
-    std::ifstream ifs(input_file.c_str());
+void compress(std::istream & is, std::ostream & os, statistics_t statistics) {
+    std::vector<int32_t> frequencies(256, 0);
     char c;
-    std::size_t file_size = 0;
-    while (ifs.get(c)) {
+    int32_t file_size = 0;
+    while (is.get(c)) {
         frequencies[static_cast<unsigned char>(c)]++;
         ++file_size;
     }
-    std::ofstream ofs(output_file.c_str());
     for (auto i : frequencies) {
-        ofs.write(reinterpret_cast<char *>(&i), sizeof(int));
+        os.write(reinterpret_cast<char *>(&i), sizeof(int32_t));
     }
-    ofs.write(reinterpret_cast<char *>(&file_size), sizeof(int));
-
-    HuffTree tree(frequencies);
-    tree.build_code();
-
-    ifs.clear();
-    ifs.seekg(0, std::ios::beg);
-    BinaryOfstream bofs(ofs);
-    while (ifs.get(c)) {
-        bofs << tree.get_code_of(c);
+    os.write(reinterpret_cast<char *>(&file_size), sizeof(int32_t));
+    HuffTree tree(std::move(frequencies));
+    is.clear();
+    is.seekg(0, std::ios::beg);
+    BinaryOstream bos(os);
+    while (is.get(c)) {
+        bos << tree.get_code_of(c);
     }
-    std::cout << file_size << std::endl;
-    std::cout << static_cast<int>(ofs.tellp()) + 1 << std::endl;
-    std::cout << 256 * sizeof(int) + sizeof(int) << std::endl;
+    statistics.source_size = file_size;
+    statistics.compressed_size = static_cast<int32_t>(os.tellp()) + 1;
 }
 
 
-void decompress(std::string input_file, std::string output_file) {
-    std::ifstream ifs(input_file.c_str());
-    std::vector<int> frequencies(256);
+void decompress(std::istream & is, std::ostream & os, statistics_t statistics) {
+    std::vector<int32_t> frequencies(256);
     for (std::size_t i = 0; i < frequencies.size(); ++i) {
-        ifs.read(reinterpret_cast<char *>(&frequencies[i]), sizeof(int));
+        is.read(reinterpret_cast<char *>(&frequencies[i]), sizeof(int32_t));
     }
-    int count;
-    ifs.read(reinterpret_cast<char *>(&count), sizeof(int));
-    HuffTree tree(frequencies);
-    tree.build_code();
-    BinaryIfstream bifs(ifs);
-    std::ofstream ofs(output_file.c_str());
+    int32_t count;
+    is.read(reinterpret_cast<char *>(&count), sizeof(int32_t));
+    HuffTree tree(std::move(frequencies));
+    BinaryIstream bis(is);
     int cur = tree.get_root();
-    while (bifs && count) {
+    while (bis && count) {
         bool bit;
-        bifs >> bit;
+        bis >> bit;
         if (tree.get_child(cur, bit) == -1) {
-            ofs.write(reinterpret_cast<char *>(&cur), 1);
+            os.write(reinterpret_cast<char *>(&cur), 1);
             cur = tree.get_root();
             --count;
         }
         cur = tree.get_child(cur, bit);
     }
-    int extra_info = 256 * sizeof(int) + sizeof(int);
-    std::cout << static_cast<int>(ifs.tellg()) - extra_info << std::endl;
-    std::cout << static_cast<int>(ofs.tellp()) << std::endl;
-    std::cout << extra_info << std::endl;
+    statistics.decompressed_size = static_cast<int32_t>(is.tellg()) - statistics.EXTRA_INFO;
+    statistics.compressed_size = static_cast<int32_t>(os.tellp());
 }
