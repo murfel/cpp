@@ -60,10 +60,6 @@ HuffTree::HuffTree(std::vector<int32_t> frequencies) {
     start_building_codes();
 }
 
-int HuffTree::get_child(int index, bool right) const {
-    return right ? tree_.at(index).right : tree_.at(index).left;
-}
-
 std::vector<bool> HuffTree::get_code_of(int symbol) const {
     auto it = symbol_to_code_.find(symbol);
     if (it == symbol_to_code_.end()) {
@@ -77,7 +73,7 @@ HuffTree::Iterator& HuffTree::Iterator::operator+=(bool bit) {
     return *this;
 }
 
-int HuffTree::Iterator::operator*() const {
+char HuffTree::Iterator::operator*() const {
     if (is_leaf()) {
         return position_;
     }
@@ -85,7 +81,7 @@ int HuffTree::Iterator::operator*() const {
 }
 
 bool HuffTree::Iterator::is_leaf() const {
-    return tree_.tree_[position_].left != -1;
+    return tree_.tree_[position_].left == -1;
 }
 
 void HuffTree::start_building_codes() {
@@ -140,17 +136,18 @@ void decompress(std::istream & is, std::ostream & os, statistics_t & statistics)
     is.read(reinterpret_cast<char *>(&count), sizeof(int32_t));
     HuffTree tree(std::move(frequencies));
     BinaryIstream bis(is);
-    int cur = tree.get_root();
-    while (bis && count) {
-        bool bit;
-        bis >> bit;
-        if (tree.get_child(cur, bit) == -1) {
-            os.write(reinterpret_cast<char *>(&cur), 1);
-            cur = tree.get_root();
-            --count;
+
+    for (int32_t i = 0; i < count; ++i) {
+        HuffTree::Iterator it = tree.begin();
+        while (!it.is_leaf()) {
+            bool bit;
+            bis >> bit;
+            it += bit;
         }
-        cur = tree.get_child(cur, bit);
+        char c = *it;
+        os.write(reinterpret_cast<char *>(&c), 1);
     }
+
     statistics.decompressed_size = static_cast<int32_t>(is.tellg()) - statistics.EXTRA_INFO;
     statistics.compressed_size = os.tellp();
 }
