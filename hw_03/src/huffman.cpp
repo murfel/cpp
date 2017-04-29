@@ -12,13 +12,13 @@ BinaryOstream::~BinaryOstream() {
 }
 
 BinaryOstream& BinaryOstream::operator<<(std::vector<bool> output) {
-    for (std::size_t i = 0; i < output.size(); ++i) {
+    for (bool bit : output) {
         if (counter_ == 8) {
             os_.write(reinterpret_cast<char *>(&buffer_), 1);
             counter_ = 0;
             buffer_ = 0;
         }
-        buffer_ |= (output[i] << counter_++);
+        buffer_ |= (bit << counter_++);
     }
     return *this;
 }
@@ -61,17 +61,15 @@ HuffTree::HuffTree(std::vector<int32_t> frequencies) {
 }
 
 int HuffTree::get_child(int index, bool right) const {
-    if (static_cast<std::size_t>(index) >= tree_.size()) {
-        throw std::runtime_error("Index out-of-bound.");
-    }
-    return right ? tree_[index].right : tree_[index].left;
+    return right ? tree_.at(index).right : tree_.at(index).left;
 }
 
 std::vector<bool> HuffTree::get_code_of(int symbol) const {
-    if (symbol_to_code_.find(symbol) == symbol_to_code_.end()) {
+    auto it = symbol_to_code_.find(symbol);
+    if (it == symbol_to_code_.end()) {
         throw std::runtime_error("A code for non-existent symbol requested.");
     }
-    return (*symbol_to_code_.find(symbol)).second;
+    return it->second;
 }
 
 void HuffTree::start_building_codes() {
@@ -101,8 +99,8 @@ void compress(std::istream & is, std::ostream & os, statistics_t & statistics) {
         frequencies[static_cast<unsigned char>(c)]++;
         ++file_size;
     }
-    for (auto i : frequencies) {
-        os.write(reinterpret_cast<char *>(&i), sizeof(int32_t));
+    for (int32_t freq : frequencies) {
+        os.write(reinterpret_cast<char *>(&freq), sizeof(int32_t));
     }
     os.write(reinterpret_cast<char *>(&file_size), sizeof(int32_t));
     HuffTree tree(std::move(frequencies));
@@ -119,8 +117,8 @@ void compress(std::istream & is, std::ostream & os, statistics_t & statistics) {
 
 void decompress(std::istream & is, std::ostream & os, statistics_t & statistics) {
     std::vector<int32_t> frequencies(256);
-    for (std::size_t i = 0; i < frequencies.size(); ++i) {
-        is.read(reinterpret_cast<char *>(&frequencies[i]), sizeof(int32_t));
+    for (int32_t & freq : frequencies) {
+        is.read(reinterpret_cast<char *>(&freq), sizeof(int32_t));
     }
     int32_t count;
     is.read(reinterpret_cast<char *>(&count), sizeof(int32_t));
@@ -138,5 +136,32 @@ void decompress(std::istream & is, std::ostream & os, statistics_t & statistics)
         cur = tree.get_child(cur, bit);
     }
     statistics.decompressed_size = static_cast<int32_t>(is.tellg()) - statistics.EXTRA_INFO;
-    statistics.compressed_size = static_cast<int32_t>(os.tellp());
+    statistics.compressed_size = os.tellp();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
