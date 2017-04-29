@@ -75,12 +75,17 @@ int main(int argc, char ** argv) {
     statistics_t statistics;
     try {
         if (args.action == archive) {
-                std::ifstream ifs(args.input_file.c_str());
-                std::ofstream ofs(args.output_file.c_str());
-                compress(ifs, ofs, statistics);
-                std::cout << statistics.source_size << std::endl;
-                std::cout << statistics.compressed_size << std::endl;
+            std::ifstream ifs(args.input_file.c_str());
+            std::ofstream ofs(args.output_file.c_str());
+            compress(ifs, ofs, statistics);
+            std::cout << statistics.source_size << std::endl;
+            std::cout << statistics.compressed_size << std::endl;
+            if (statistics.source_size == 0) {
+                std::cout << 0 << std::endl;
+            }
+            else {
                 std::cout << statistics.EXTRA_INFO << std::endl;
+            }
         }
         else {
             std::ifstream ifs(args.input_file.c_str());
@@ -88,7 +93,12 @@ int main(int argc, char ** argv) {
             decompress(ifs, ofs, statistics);
             std::cout << statistics.decompressed_size << std::endl;
             std::cout << statistics.compressed_size << std::endl;
-            std::cout << statistics.EXTRA_INFO << std::endl;
+            if (statistics.compressed_size == 0) {
+                std::cout << 0 << std::endl;
+            }
+            else {
+                std::cout << statistics.EXTRA_INFO << std::endl;
+            }
         }
     } catch (const std::exception & e) {
         std::cout << e.what() << std::endl;
@@ -97,33 +107,3 @@ int main(int argc, char ** argv) {
 
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

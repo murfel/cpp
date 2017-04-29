@@ -114,6 +114,11 @@ void compress(std::istream & is, std::ostream & os, statistics_t & statistics) {
         frequencies[static_cast<unsigned char>(c)]++;
         ++file_size;
     }
+    if (file_size == 0) {
+        statistics.source_size = 0;
+        statistics.compressed_size = 0;
+        return;
+    }
     for (int32_t freq : frequencies) {
         os.write(reinterpret_cast<char *>(&freq), sizeof(int32_t));
     }
@@ -131,6 +136,11 @@ void compress(std::istream & is, std::ostream & os, statistics_t & statistics) {
 
 
 void decompress(std::istream & is, std::ostream & os, statistics_t & statistics) {
+    if (is.peek() == std::istream::traits_type::eof()) {
+        statistics.compressed_size = 0;
+        statistics.decompressed_size = 0;
+        return;
+    }
     std::vector<int32_t> frequencies(256);
     for (int32_t & freq : frequencies) {
         is.read(reinterpret_cast<char *>(&freq), sizeof(int32_t));
@@ -154,30 +164,3 @@ void decompress(std::istream & is, std::ostream & os, statistics_t & statistics)
     statistics.decompressed_size = static_cast<int32_t>(is.tellg()) - statistics.EXTRA_INFO;
     statistics.compressed_size = os.tellp();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

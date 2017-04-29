@@ -27,6 +27,7 @@ TEST(huffman_test, boundary) {
 
 TEST(huffman_test, empty_stream) {
     std::stringstream input;
+    input.str(std::string());
     std::stringstream compressed;
     std::stringstream decompressed;
 
