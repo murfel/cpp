@@ -13,26 +13,6 @@ struct statistics_t {
 };
 
 
-class HuffTree {
-public:
-    HuffTree(std::vector<int32_t> frequencies);
-    std::vector<bool> get_code_of(int symbol) const;
-    int get_child(int index, bool right) const;
-    int get_root() const { return root_; }
-private:
-    void start_building_codes();
-    void build_code(int index, std::vector<bool> code);
-    struct TreeNode {
-        TreeNode() {};
-        TreeNode(int left, int right) : left(left), right(right) {};
-        int left;
-        int right;
-    };
-    std::vector<TreeNode> tree_;
-    int root_;
-    std::unordered_map<int, std::vector<bool>> symbol_to_code_;
-};
-
 class BinaryOstream {
 public:
     BinaryOstream(std::ostream& os) : os_(os), buffer_(0), counter_(0) {};
@@ -43,6 +23,7 @@ private:
     std::int8_t buffer_;
     int counter_;
 };
+
 
 class BinaryIstream {
 public:
@@ -57,6 +38,26 @@ private:
 };
 
 
-void compress(std::istream & is, std::ostream & os, statistics_t statistics);
-void decompress(std::istream & is, std::ostream & os, statistics_t statistics);
+class HuffTree {
+public:
+    HuffTree(std::vector<int32_t> frequencies);
+    int get_child(int index, bool right) const;
+    int get_root() const { return root_; }
+    std::vector<bool> get_code_of(int symbol) const;
+private:
+    void start_building_codes();
+    void build_code(int index, std::vector<bool> code);
+    struct TreeNode {
+        TreeNode() {};
+        TreeNode(int left, int right) : left(left), right(right) {};
+        int left;
+        int right;
+    };
+    std::vector<TreeNode> tree_;
+    int root_;
+    std::unordered_map<int, std::vector<bool>> symbol_to_code_;
+};
 
+
+void compress(std::istream & is, std::ostream & os, statistics_t & statistics);
+void decompress(std::istream & is, std::ostream & os, statistics_t & statistics);

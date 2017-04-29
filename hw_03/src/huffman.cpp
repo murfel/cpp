@@ -60,6 +60,20 @@ HuffTree::HuffTree(std::vector<int32_t> frequencies) {
     start_building_codes();
 }
 
+int HuffTree::get_child(int index, bool right) const {
+    if (static_cast<std::size_t>(index) >= tree_.size()) {
+        throw std::runtime_error("Index out-of-bound.");
+    }
+    return right ? tree_[index].right : tree_[index].left;
+}
+
+std::vector<bool> HuffTree::get_code_of(int symbol) const {
+    if (symbol_to_code_.find(symbol) == symbol_to_code_.end()) {
+        throw std::runtime_error("A code for non-existent symbol requested.");
+    }
+    return (*symbol_to_code_.find(symbol)).second;
+}
+
 void HuffTree::start_building_codes() {
     build_code(root_, std::vector<bool>());
 }
@@ -78,22 +92,8 @@ void HuffTree::build_code(int index, std::vector<bool> code) {
     }
 }
 
-int HuffTree::get_child(int index, bool right) const {
-    if (static_cast<std::size_t>(index) >= tree_.size()) {
-        throw std::runtime_error("Index out-of-bound.");
-    }
-    return right ? tree_[index].right : tree_[index].left;
-}
 
-std::vector<bool> HuffTree::get_code_of(int symbol) const {
-    if (symbol_to_code_.find(symbol) == symbol_to_code_.end()) {
-        throw std::runtime_error("A code for non-existent symbol requested.");
-    }
-    return (*symbol_to_code_.find(symbol)).second;
-}
-
-
-void compress(std::istream & is, std::ostream & os, statistics_t statistics) {
+void compress(std::istream & is, std::ostream & os, statistics_t & statistics) {
     std::vector<int32_t> frequencies(256, 0);
     char c;
     int32_t file_size = 0;
@@ -117,7 +117,7 @@ void compress(std::istream & is, std::ostream & os, statistics_t statistics) {
 }
 
 
-void decompress(std::istream & is, std::ostream & os, statistics_t statistics) {
+void decompress(std::istream & is, std::ostream & os, statistics_t & statistics) {
     std::vector<int32_t> frequencies(256);
     for (std::size_t i = 0; i < frequencies.size(); ++i) {
         is.read(reinterpret_cast<char *>(&frequencies[i]), sizeof(int32_t));
