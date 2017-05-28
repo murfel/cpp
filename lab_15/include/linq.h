@@ -20,7 +20,7 @@ class until_enumerator;
 template<typename T, typename F>
 class where_enumerator;
 template<typename T>
-class where_neq_enumerator;
+class take_enumerator;
 
 template<typename T>
 class enumerator {
@@ -28,17 +28,6 @@ public:
   virtual const T& operator*() const = 0; // Получает текущий элемент.
   virtual enumerator<T>& operator++() = 0;  // Переход к следующему элементу
   virtual operator bool() const = 0; // Возвращает true, если есть текущий элемент
-
-//  virtual const T& operator*() const override {
-//
-//  }
-//  virtual enumerator<T>& operator++() override {
-//
-//  }
-//  virtual operator bool() const override {
-//
-//  }
-
 
   auto drop(int count) {
     return drop_enumerator<T>(*this, count);
@@ -49,10 +38,14 @@ public:
     return select_enumerator<U, T, F>(*this, func);
   }
 
-//  template<typename F>
-//  auto until(F func) {
-//    return until_enumerator<T, F>(*this, func);
-//  }
+  template<typename F>
+  auto until(F func) {
+    return until_enumerator<T, F>(*this, func);
+  }
+
+  auto until_eq(T value) {
+    return this->until([value](const T& x) { return x == value; });
+  }
 
   template<typename F>
   auto where(F predicate) {
@@ -61,6 +54,10 @@ public:
 
   auto where_neq(T value) {
     return this->where([value](const T& x) { return x != value; });
+  }
+
+  auto take(int count) {
+    return take_enumerator<T>(*this, count);
   }
 
   std::vector<T> to_vector() {
@@ -72,14 +69,14 @@ public:
     return result;
   }
 
-//  template<typename Iter>
-//  void copy_to(Iter it) {
-//    while (*this) {
-//      *it = *this;
-//      ++it;
-//      ++(*this);
-//    }
-//  }
+  template<typename Iter>
+  void copy_to(Iter it) {
+    while (*this) {
+      *it = *this;
+      ++it;
+      ++(*this);
+    }
+  }
 };
 
 template<typename T, typename Iter>
@@ -165,16 +162,25 @@ private:
   mutable T last_elem_;
 };
 
-//template<typename T, typename F>
-//class until_enumerator : public enumerator<T> {
-//public:
-//  until_enumerator(enumerator<T> &parent, F predicate) : parent_(parent), predicate_(predicate) {
-//  }
-//
-//private:
-//  enumerator<T> &parent_;
-//  F predicate_;
-//};
+template<typename T, typename F>
+class until_enumerator : public enumerator<T> {
+public:
+  until_enumerator(enumerator<T> &parent, F predicate) : parent_(parent), predicate_(predicate) {
+  }
+  virtual const T& operator*() const override {
+    return *parent_;
+  }
+  virtual enumerator<T>& operator++() override {
+    ++parent_;
+    return *this;
+  }
+  virtual operator bool() const override {
+    return *parent_ && !predicate_(*parent_);
+  }
+private:
+  enumerator<T> &parent_;
+  F predicate_;
+};
 
 template<typename T, typename F>
 class where_enumerator : public enumerator<T> {
@@ -200,5 +206,26 @@ private:
   enumerator<T> &parent_;
   F predicate_;
 };
+
+template<typename T>
+class take_enumerator : public enumerator<T> {
+public:
+  take_enumerator(enumerator<T> &parent, int count) : parent_(parent), count_(count) {}
+  virtual const T& operator*() const override {
+    return *parent_;
+  }
+  virtual enumerator<T>& operator++() override {
+    ++parent_;
+    --count_;
+    return *this;
+  }
+  virtual operator bool() const override {
+    return count_ && parent_;
+  }
+private:
+  enumerator<T> &parent_;
+  int count_;
+};
+
 
 #endif
