@@ -67,8 +67,8 @@ void example4() {
 
 int main() {
   example1();
-  example2();
-  example3();
-  example4();
+//  example2();
+//  example3();
+//  example4();
   return 0;
 }
