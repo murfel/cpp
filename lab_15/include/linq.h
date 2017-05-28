@@ -165,21 +165,23 @@ private:
 template<typename T, typename F>
 class until_enumerator : public enumerator<T> {
 public:
-  until_enumerator(enumerator<T> &parent, F predicate) : parent_(parent), predicate_(predicate) {
+  until_enumerator(enumerator<T> &parent, F predicate) : parent_(parent), predicate_(predicate), is_valid_(*parent_ && !predicate_(*parent_)) {
   }
   virtual const T& operator*() const override {
     return *parent_;
   }
   virtual enumerator<T>& operator++() override {
     ++parent_;
+    is_valid_ = !predicate_(*parent_);
     return *this;
   }
   virtual operator bool() const override {
-    return *parent_ && !predicate_(*parent_);
+    return *parent_ && is_valid_;
   }
 private:
   enumerator<T> &parent_;
   F predicate_;
+  bool is_valid_;
 };
 
 template<typename T, typename F>

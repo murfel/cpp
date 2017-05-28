@@ -5,6 +5,26 @@
 #include <sstream>
 #include <iterator>
 
+void from_to_vector() {
+  std::vector<int> xs = { 1, 2, 3 };
+  std::vector<int> res = from(xs.begin(), xs.end()).to_vector();
+  assert(res == xs);
+}
+
+void from_select() {
+  const int xs[] = { 1, 2, 3 };
+  std::vector<int> res = from(xs, xs + 3).select([](int x) { return x + 5; }).to_vector();
+  std::vector<int> expected = { 6, 7, 8 };
+  assert(res == expected);
+}
+
+void from_drop_select() {
+  const int xs[] = { 1, 2, 3 };
+  std::vector<int> res = from(xs, xs + 3).drop(1).select([](int x) { return x + 5; }).to_vector();
+  std::vector<int> expected = { 7, 8 };
+  assert(res == expected);
+}
+
 void example1() {
 //  int xs[] = { 1, 2, 3, 4, 5, 6, 0, 7 };
   int xs[] = { 1, 2, 3, 4, 5 };
@@ -66,10 +86,20 @@ void example4() {
   assert(oss.str() == "2\n4\n");
 }
 
+void example5() {
+  double xs[] = { 1, 2, 3, 4, 5 };
+  bool a = from(xs, xs + 3);
+  assert(a == true);
+}
+
 int main() {
+  from_to_vector();
+  from_select();
+  from_drop_select();
   example1();
   example2();
   example3();
   example4();
+  example5();
   return 0;
 }
