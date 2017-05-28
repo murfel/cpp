@@ -18,11 +18,6 @@ void example1() {
     .to_vector();     // Преобразовать результат в вектор
 
   std::vector<int> expected = { 16 };
-//  cerr << "Result: size = ";
-//  cerr << res.size() << "\n";
-//  for (auto i : res)
-//    cerr << i << " ";
-//  cerr << "\n";
   assert(res == expected);
 }
 
@@ -68,7 +63,6 @@ void example4() {
   .select([](int x) { return static_cast<int>(sqrt(x) + 1e-6); })  // Извлечь из каждого корень
   .copy_to(out);  // Вывести на экран
 
-  cerr << oss.str() << "\n";
   assert(oss.str() == "2\n4\n");
 }
 
@@ -76,6 +70,6 @@ int main() {
   example1();
   example2();
   example3();
-//  example4();
+  example4();
   return 0;
 }
