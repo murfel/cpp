@@ -25,9 +25,9 @@ class take_enumerator;
 template<typename T>
 class enumerator {
 public:
-  virtual const T& operator*() const = 0; // Получает текущий элемент.
+  virtual const T& operator*() = 0; // Получает текущий элемент.
   virtual enumerator<T>& operator++() = 0;  // Переход к следующему элементу
-  virtual operator bool() const = 0; // Возвращает true, если есть текущий элемент
+  virtual operator bool() = 0; // Возвращает true, если есть текущий элемент
 
   auto drop(int count) {
     return drop_enumerator<T>(*this, count);
@@ -84,14 +84,14 @@ class range_enumerator : public enumerator<T> {
 public:
   range_enumerator(Iter begin, Iter end) : begin_(begin), end_(end) {
   }
-  virtual const T& operator*() const override {
+  virtual const T& operator*() override {
     return *begin_;
   }
   virtual enumerator<T>& operator++() override {
     ++begin_;
     return *this;
   }
-  virtual operator bool() const override {
+  virtual operator bool() override {
     return begin_!= end_;
   }
 
@@ -108,7 +108,7 @@ template<typename T>
 class drop_enumerator : public enumerator<T> {
 public:
   drop_enumerator(enumerator<T> &parent, int count) : parent_(parent), count_(count) {}
-  virtual const T& operator*() const override {
+  virtual const T& operator*() override {
     drop();
     if (count_)
       throw std::runtime_error("Attemp to dereference an empty Drop enumerator.");
@@ -121,12 +121,12 @@ public:
     ++parent_;
     return *this;
   }
-  virtual operator bool() const override {
+  virtual operator bool() override {
     drop();
     return (count_ ? false : parent_);
   }
 private:
-  void drop() const {
+  void drop() {
     while (parent_)
       if (count_) {
         ++parent_;
@@ -136,7 +136,7 @@ private:
         break;
   }
   enumerator<T> &parent_;
-  mutable int count_;
+  int count_;
 };
 
 
@@ -144,7 +144,7 @@ template<typename T, typename U, typename F>
 class select_enumerator : public enumerator<T> {
 public:
   select_enumerator(enumerator<U> &parent, F func) : parent_(parent), func_(func) {}
-  virtual const T& operator*() const override {
+  virtual const T& operator*() override {
     last_elem_ = func_(*parent_);
     return last_elem_;
   }
@@ -152,14 +152,14 @@ public:
     ++parent_;
     return *this;
   }
-  virtual operator bool() const override {
+  virtual operator bool() override {
     return parent_;
   }
 
 private:
   enumerator<U> & parent_;
   F func_;
-  mutable T last_elem_;
+  T last_elem_;
 };
 
 template<typename T, typename F>
@@ -167,7 +167,7 @@ class until_enumerator : public enumerator<T> {
 public:
   until_enumerator(enumerator<T> &parent, F predicate) : parent_(parent), predicate_(predicate), is_valid_(*parent_ && !predicate_(*parent_)) {
   }
-  virtual const T& operator*() const override {
+  virtual const T& operator*() override {
     return *parent_;
   }
   virtual enumerator<T>& operator++() override {
@@ -175,7 +175,7 @@ public:
     is_valid_ = !predicate_(*parent_);
     return *this;
   }
-  virtual operator bool() const override {
+  virtual operator bool() override {
     return *parent_ && is_valid_;
   }
 private:
@@ -189,7 +189,7 @@ class where_enumerator : public enumerator<T> {
 public:
   where_enumerator(enumerator<T> &parent, F predicate) : parent_(parent), predicate_(predicate) {}
   // invariant: мы стоим на неизвестном месте (но нельзя: мы стоим на ок элементе -- таких может не быть вообще)
-  virtual const T& operator*() const override {
+  virtual const T& operator*() override {
     operator bool();
     return *parent_;
   }
@@ -199,7 +199,7 @@ public:
     ++parent_;
     return *this;
   }
-  virtual operator bool() const override {
+  virtual operator bool() override {
     while (parent_ && !predicate_(*parent_))
       ++parent_;
     return parent_ && predicate_(*parent_);
@@ -213,7 +213,7 @@ template<typename T>
 class take_enumerator : public enumerator<T> {
 public:
   take_enumerator(enumerator<T> &parent, int count) : parent_(parent), count_(count) {}
-  virtual const T& operator*() const override {
+  virtual const T& operator*() override {
     return *parent_;
   }
   virtual enumerator<T>& operator++() override {
@@ -221,7 +221,7 @@ public:
     --count_;
     return *this;
   }
-  virtual operator bool() const override {
+  virtual operator bool() override {
     return count_ && parent_;
   }
 private:
