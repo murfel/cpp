@@ -139,7 +139,6 @@ private:
   int count_;
 };
 
-
 template<typename T, typename U, typename F>
 class select_enumerator : public enumerator<T> {
 public:
@@ -176,7 +175,7 @@ public:
     return *this;
   }
   virtual operator bool() override {
-    return *parent_ && is_valid_;
+    return parent_ && is_valid_;
   }
 private:
   enumerator<T> &parent_;
