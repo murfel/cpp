@@ -166,7 +166,7 @@ public:
   }
   virtual enumerator<T>& operator++() override {
     ++parent_;
-    is_valid_ = !predicate_(*parent_);
+    is_valid_ = parent_ ? !predicate_(*parent_) : false;
     return *this;
   }
   virtual explicit operator bool() override {
