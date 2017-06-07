@@ -134,7 +134,7 @@ private:
 template<typename T, typename U, typename F>
 class select_enumerator : public enumerator<T> {
 public:
-  select_enumerator(enumerator<U> &parent, const F &func) : parent_(parent), func_(std::move(func)) {
+  select_enumerator(enumerator<U> &parent, F func) : parent_(parent), func_(std::move(func)) {
     if (parent_)
       last_elem_ = func_(*parent_);
   }
