@@ -27,7 +27,7 @@ class enumerator {
 public:
   virtual const T& operator*() = 0; // Получает текущий элемент.
   virtual enumerator<T>& operator++() = 0;  // Переход к следующему элементу
-  virtual operator bool() = 0; // Возвращает true, если есть текущий элемент
+  virtual explicit operator bool() = 0; // Возвращает true, если есть текущий элемент
 
   auto drop(int count) {
     return drop_enumerator<T>(*this, count);
@@ -91,7 +91,7 @@ public:
     ++begin_;
     return *this;
   }
-  virtual operator bool() override {
+  virtual explicit operator bool() override {
     return begin_!= end_;
   }
 
@@ -107,26 +107,7 @@ auto from(Iter begin, Iter end) {
 template<typename T>
 class drop_enumerator : public enumerator<T> {
 public:
-  drop_enumerator(enumerator<T> &parent, int count) : parent_(parent), count_(count) {}
-  virtual const T& operator*() override {
-    drop();
-    if (count_)
-      throw std::runtime_error("Attemp to dereference an empty Drop enumerator.");
-    return *parent_;
-  }
-  virtual enumerator<T>& operator++() override {
-    drop();
-    if (count_)
-      throw std::runtime_error("Attemp to increment past-the-end Drop enumerator.");
-    ++parent_;
-    return *this;
-  }
-  virtual operator bool() override {
-    drop();
-    return (count_ ? false : parent_);
-  }
-private:
-  void drop() {
+  drop_enumerator(enumerator<T> &parent, int count) : parent_(parent), count_(count) {
     while (parent_)
       if (count_) {
         ++parent_;
@@ -135,6 +116,17 @@ private:
       else
         break;
   }
+  virtual const T& operator*() override {
+    return *parent_;
+  }
+  virtual enumerator<T>& operator++() override {
+    ++parent_;
+    return *this;
+  }
+  virtual explicit operator bool() override {
+    return (count_ ? false : static_cast<bool>(parent_));
+  }
+private:
   enumerator<T> &parent_;
   int count_;
 };
@@ -155,8 +147,8 @@ public:
       last_elem_ = func_(*parent_);
     return *this;
   }
-  virtual operator bool() override {
-    return parent_;
+  virtual explicit operator bool() override {
+    return static_cast<bool>(parent_);
   }
 private:
   enumerator<U> & parent_;
@@ -177,8 +169,8 @@ public:
     is_valid_ = !predicate_(*parent_);
     return *this;
   }
-  virtual operator bool() override {
-    return parent_ && is_valid_;
+  virtual explicit operator bool() override {
+    return static_cast<bool>(parent_) && is_valid_;
   }
 private:
   enumerator<T> &parent_;
@@ -202,7 +194,7 @@ public:
     advance();
     return *this;
   }
-  virtual operator bool() override {
+  virtual explicit operator bool() override {
     return parent_ && predicate_(*parent_);
   }
 private:
@@ -226,7 +218,7 @@ public:
     --count_;
     return *this;
   }
-  virtual operator bool() override {
+  virtual explicit operator bool() override {
     return count_ && parent_;
   }
 private:

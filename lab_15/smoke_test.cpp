@@ -86,10 +86,10 @@ void example4() {
   assert(oss.str() == "2\n4\n");
 }
 
-void example5() {
-  double xs[] = { 1, 2, 3, 4, 5 };
-  bool a = from(xs, xs + 3);
-  assert(a == true);
+void example5() {  // should not compile
+//  double xs[] = { 1, 2, 3, 4, 5 };
+//  bool a = from(xs, xs + 3);
+//  assert(a == true);
 }
 
 int main() {
@@ -100,6 +100,6 @@ int main() {
   example2();
   example3();
   example4();
-  example5();
+//  example5();
   return 0;
 }
