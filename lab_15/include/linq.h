@@ -44,7 +44,7 @@ public:
   }
 
   auto until_eq(const T& value) {
-    return this->until([&value](const T& x) { return x == value; });
+    return until([&value](const T& x) { return x == value; });
   }
 
   template<typename F>
@@ -53,7 +53,7 @@ public:
   }
 
   auto where_neq(const T& value) {
-    return this->where([&value](const T& x) { return x != value; });
+    return where([&value](const T& x) { return x != value; });
   }
 
   auto take(int count) {
@@ -189,24 +189,27 @@ private:
 template<typename T, typename F>
 class where_enumerator : public enumerator<T> {
 public:
-  where_enumerator(enumerator<T> &parent, F predicate) : parent_(parent), predicate_(std::move(predicate)) {}
-  // invariant: мы стоим на неизвестном месте (но нельзя: мы стоим на ок элементе -- таких может не быть вообще)
+  // инвариант: текущий элемент корректен (если не конец последовательности)
+  where_enumerator(enumerator<T> &parent, F predicate) : parent_(parent), predicate_(std::move(predicate)) {
+    advance();
+  }
   virtual const T& operator*() override {
     operator bool();
     return *parent_;
   }
   virtual enumerator<T>& operator++() override {
-    // Найти ближайший валидный (мб текущий), и шагнуть за него
-    operator bool();
     ++parent_;
+    advance();
     return *this;
   }
   virtual operator bool() override {
-    while (parent_ && !predicate_(*parent_))
-      ++parent_;
     return parent_ && predicate_(*parent_);
   }
 private:
+  void advance() {
+    while (parent_ && !predicate_(*parent_))
+      ++parent_;
+  }
   enumerator<T> &parent_;
   F predicate_;
 };
