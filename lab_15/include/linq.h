@@ -124,7 +124,7 @@ public:
     return *this;
   }
   virtual explicit operator bool() override {
-    return (count_ ? false : static_cast<bool>(parent_));
+    return count_ ? false : static_cast<bool>(parent_);
   }
 private:
   enumerator<T> &parent_;
@@ -159,8 +159,7 @@ private:
 template<typename T, typename F>
 class until_enumerator : public enumerator<T> {
 public:
-  until_enumerator(enumerator<T> &parent, F predicate) : parent_(parent), predicate_(std::move(predicate)), is_valid_(*parent_ && !predicate_(*parent_)) {
-  }
+  until_enumerator(enumerator<T> &parent, F predicate) : parent_(parent), predicate_(std::move(predicate)), is_valid_(parent_ && !predicate_(*parent_)) {}
   virtual const T& operator*() override {
     return *parent_;
   }
@@ -170,7 +169,7 @@ public:
     return *this;
   }
   virtual explicit operator bool() override {
-    return static_cast<bool>(parent_) && is_valid_;
+    return parent_ && is_valid_;
   }
 private:
   enumerator<T> &parent_;
