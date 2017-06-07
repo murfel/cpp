@@ -35,25 +35,25 @@ public:
 
   template<typename U = T, typename F>
   auto select(F func) {
-    return select_enumerator<U, T, F>(*this, func);
+    return select_enumerator<U, T, F>(*this, std::move(func));
   }
 
   template<typename F>
   auto until(F func) {
-    return until_enumerator<T, F>(*this, func);
+    return until_enumerator<T, F>(*this, std::move(func));
   }
 
-  auto until_eq(T value) {
-    return this->until([value](const T& x) { return x == value; });
+  auto until_eq(const T& value) {
+    return this->until([&value](const T& x) { return x == value; });
   }
 
   template<typename F>
   auto where(F predicate) {
-    return where_enumerator<T, F>(*this, predicate);
+    return where_enumerator<T, F>(*this, std::move(predicate));
   }
 
-  auto where_neq(T value) {
-    return this->where([value](const T& x) { return x != value; });
+  auto where_neq(const T& value) {
+    return this->where([&value](const T& x) { return x != value; });
   }
 
   auto take(int count) {
@@ -142,7 +142,7 @@ private:
 template<typename T, typename U, typename F>
 class select_enumerator : public enumerator<T> {
 public:
-  select_enumerator(enumerator<U> &parent, F func) : parent_(parent), func_(func) {}
+  select_enumerator(enumerator<U> &parent, const F &func) : parent_(parent), func_(std::move(func)) {}
   virtual const T& operator*() override {
     last_elem_ = func_(*parent_);
     return last_elem_;
@@ -164,7 +164,7 @@ private:
 template<typename T, typename F>
 class until_enumerator : public enumerator<T> {
 public:
-  until_enumerator(enumerator<T> &parent, F predicate) : parent_(parent), predicate_(predicate), is_valid_(*parent_ && !predicate_(*parent_)) {
+  until_enumerator(enumerator<T> &parent, F predicate) : parent_(parent), predicate_(std::move(predicate)), is_valid_(*parent_ && !predicate_(*parent_)) {
   }
   virtual const T& operator*() override {
     return *parent_;
@@ -186,7 +186,7 @@ private:
 template<typename T, typename F>
 class where_enumerator : public enumerator<T> {
 public:
-  where_enumerator(enumerator<T> &parent, F predicate) : parent_(parent), predicate_(predicate) {}
+  where_enumerator(enumerator<T> &parent, F predicate) : parent_(parent), predicate_(std::move(predicate)) {}
   // invariant: мы стоим на неизвестном месте (но нельзя: мы стоим на ок элементе -- таких может не быть вообще)
   virtual const T& operator*() override {
     operator bool();
