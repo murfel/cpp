@@ -142,19 +142,22 @@ private:
 template<typename T, typename U, typename F>
 class select_enumerator : public enumerator<T> {
 public:
-  select_enumerator(enumerator<U> &parent, const F &func) : parent_(parent), func_(std::move(func)) {}
+  select_enumerator(enumerator<U> &parent, const F &func) : parent_(parent), func_(std::move(func)) {
+    if (parent_)
+      last_elem_ = func_(*parent_);
+  }
   virtual const T& operator*() override {
-    last_elem_ = func_(*parent_);
     return last_elem_;
   }
   virtual select_enumerator& operator++() override {
     ++parent_;
+    if (parent_)
+      last_elem_ = func_(*parent_);
     return *this;
   }
   virtual operator bool() override {
     return parent_;
   }
-
 private:
   enumerator<U> & parent_;
   F func_;
