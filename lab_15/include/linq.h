@@ -7,8 +7,7 @@
 #include <stdexcept>
 #include <iterator>
 
-using std::cerr;
-using std::endl;
+enum enumerator_iterator_type { eit_begin, eit_end };
 
 template <typename T>
 class enumerator;
@@ -28,19 +27,23 @@ class take_enumerator;
 template <typename T>
 class enumerator_iterator : std::iterator<std::forward_iterator_tag, T> {
 public:
-  enumerator_iterator(enumerator<T> *enumi) : enumi_(enumi) {}
-  T operator*() {
+  enumerator_iterator(enumerator<T> *enumi, enumerator_iterator_type type) : enumi_(enumi), type_(type) {}
+  T operator*() const {
     return **enumi_;
   }
   enumerator_iterator<T>& operator++() {
     ++*enumi_;
     return *this;
   }
-  bool operator!=(enumerator_iterator<T> &) {  // other should be end
-    return static_cast<bool>(*enumi_);
+  bool operator!=(const enumerator_iterator<T> &other) const {
+    if (enumi_ != other.enumi_)
+      return true;
+    if (type_ == other.type_)
+      return false;
+    return (type_ == eit_begin) ? static_cast<bool>(*enumi_) : (other != *this);
   }
-private:
   enumerator<T> *enumi_;
+  enumerator_iterator_type type_;
 };
 
 template<typename T>
@@ -49,11 +52,13 @@ public:
   virtual const T& operator*() = 0; // Получает текущий элемент.
   virtual enumerator<T>& operator++() = 0;  // Переход к следующему элементу
   virtual explicit operator bool() = 0; // Возвращает true, если есть текущий элемент
-  virtual enumerator_iterator<T> begin() {
-      return enumerator_iterator<T>(this);
+
+  enumerator_iterator<T> begin() {
+      return enumerator_iterator<T>(this, eit_begin);
   }
-  virtual enumerator_iterator<T> end() {
-    return begin();
+
+  enumerator_iterator<T> end() {
+    return enumerator_iterator<T>(this, eit_end);
   }
 
   auto drop(int count) {
