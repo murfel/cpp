@@ -107,14 +107,11 @@ auto from(Iter begin, Iter end) {
 template<typename T>
 class drop_enumerator : public enumerator<T> {
 public:
-  drop_enumerator(enumerator<T> &parent, int count) : parent_(parent), count_(count) {
-    while (parent_)
-      if (count_) {
-        ++parent_;
-        --count_;
-      }
-      else
-        break;
+  drop_enumerator(enumerator<T> &parent, int count) : parent_(parent) {
+    while (parent_ && count) {
+      ++parent_;
+      --count;
+    }
   }
   virtual const T& operator*() override {
     return *parent_;
@@ -124,11 +121,10 @@ public:
     return *this;
   }
   virtual explicit operator bool() override {
-    return count_ ? false : static_cast<bool>(parent_);
+    return static_cast<bool>(parent_);
   }
 private:
   enumerator<T> &parent_;
-  int count_;
 };
 
 template<typename T, typename U, typename F>
@@ -165,7 +161,7 @@ public:
   }
   virtual enumerator<T>& operator++() override {
     ++parent_;
-    is_valid_ = parent_ ? !predicate_(*parent_) : false;
+    is_valid_ = parent_ && !predicate_(*parent_);
     return *this;
   }
   virtual explicit operator bool() override {
