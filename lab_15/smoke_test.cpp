@@ -101,6 +101,14 @@ void example6() {
   assert(res == xs);
 }
 
+void example7() {
+  std::vector<double> xs = { 1.5, 2.5, 3.5 };
+  std::vector<int> res, expected = { 1, 2, 3 };
+  for (auto elem : from(xs.begin(), xs.end()).select([](int x) { return static_cast<int>(x); }))
+    res.push_back(elem);
+  assert(res == expected);
+}
+
 int main() {
   from_to_vector();
   from_select();
@@ -111,5 +119,6 @@ int main() {
   example4();
 //  example5();
   example6();
+  example7();
   return 0;
 }
