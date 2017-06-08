@@ -28,7 +28,7 @@ class take_enumerator;
 template <typename T>
 class enumerator_iterator : std::iterator<std::forward_iterator_tag, T> {
 public:
-  enumerator_iterator(enumerator<T> *enumi, bool to_begin) : enumi_(enumi), to_begin_(to_begin) {}
+  enumerator_iterator(enumerator<T> *enumi) : enumi_(enumi) {}
   T operator*() {
     return **enumi_;
   }
@@ -36,12 +36,11 @@ public:
     ++*enumi_;
     return *this;
   }
-  bool operator!=(enumerator_iterator<T> &other) {  // other should be end
-    return to_begin_ ? static_cast<bool>(*enumi_) : (other != *this);
+  bool operator!=(enumerator_iterator<T> &) {  // other should be end
+    return static_cast<bool>(*enumi_);
   }
 private:
   enumerator<T> *enumi_;
-  bool to_begin_;
 };
 
 template<typename T>
@@ -51,10 +50,10 @@ public:
   virtual enumerator<T>& operator++() = 0;  // Переход к следующему элементу
   virtual explicit operator bool() = 0; // Возвращает true, если есть текущий элемент
   virtual enumerator_iterator<T> begin() {
-      return enumerator_iterator<T>(this, true);
+      return enumerator_iterator<T>(this);
   }
   virtual enumerator_iterator<T> end() {
-    return enumerator_iterator<T>(this, false);
+    return begin();
   }
 
   auto drop(int count) {

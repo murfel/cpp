@@ -94,23 +94,11 @@ void example5() {  // should not compile
 }
 
 void example6() {
-  using namespace std;
-  int xs[] = { 1, 2, 3, 4, 5 };
-
-//  auto it = from(xs, xs + 5).begin();
-//  cerr << *it;
-//  ++it;
-//  cerr << *it;
-
-  cerr << "go\n";
-  for (auto i : from(xs, xs + 5)) {
-    std::cout << i << std::endl;
-  }
-
-//  aka
-//  for (auto begin = xxx.begin(), end = xxx.end(); begin != end; ++begin) {
-//    ...
-//  }
+  std::vector<int> xs = { 1, 2, 3 };
+  std::vector<int> res;
+  for (auto elem : from(xs.begin(), xs.end()))
+    res.push_back(elem);
+  assert(res == xs);
 }
 
 int main() {
