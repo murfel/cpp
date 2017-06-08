@@ -109,11 +109,6 @@ void example7() {
   assert(res == expected);
 }
 
-void example8() {
-//  auto l = [](int x) { return static_cast<double>(x); };
-//  std::result_of<decltype(l)&(int)>;
-}
-
 int main() {
   from_to_vector();
   from_select();
@@ -125,6 +120,5 @@ int main() {
 //  example5();
   example6();
   example7();
-  example8();
   return 0;
 }

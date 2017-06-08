@@ -6,6 +6,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <iterator>
+#include <type_traits>
 
 enum enumerator_iterator_type { eit_begin, eit_end };
 
@@ -178,9 +179,9 @@ public:
     return static_cast<bool>(parent_);
   }
 private:
-  enumerator<U> & parent_;
+  enumerator<U> &parent_;
   F func_;
-  T last_elem_;
+  typename std::result_of<F(U)>::type last_elem_;
 };
 
 template<typename T, typename F>
