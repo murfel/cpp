@@ -160,8 +160,9 @@ private:
 };
 
 template<typename U, typename F>  // U — входной тип
-class select_enumerator : public enumerator<typename std::result_of<F(U)>::type> {
-typedef typename std::result_of<F(U)>::type T;
+
+class select_enumerator : public enumerator<typename std::result_of<F&(U)>::type> {
+typedef typename std::result_of<F&(U)>::type T;
 public:
   select_enumerator(enumerator<U> &parent, F func) : parent_(parent), func_(std::move(func)) {
     if (parent_)
