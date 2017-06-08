@@ -4,6 +4,7 @@
 #include <vector>
 #include <sstream>
 #include <iterator>
+#include <iostream>
 
 void from_to_vector() {
   std::vector<int> xs = { 1, 2, 3 };
@@ -92,6 +93,26 @@ void example5() {  // should not compile
 //  assert(a == true);
 }
 
+void example6() {
+  using namespace std;
+  int xs[] = { 1, 2, 3, 4, 5 };
+
+//  auto it = from(xs, xs + 5).begin();
+//  cerr << *it;
+//  ++it;
+//  cerr << *it;
+
+  cerr << "go\n";
+  for (auto i : from(xs, xs + 5)) {
+    std::cout << i << std::endl;
+  }
+
+//  aka
+//  for (auto begin = xxx.begin(), end = xxx.end(); begin != end; ++begin) {
+//    ...
+//  }
+}
+
 int main() {
   from_to_vector();
   from_select();
@@ -101,5 +122,6 @@ int main() {
   example3();
   example4();
 //  example5();
+  example6();
   return 0;
 }

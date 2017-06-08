@@ -5,10 +5,13 @@
 #include <vector>
 #include <iostream>
 #include <stdexcept>
+#include <iterator>
 
 using std::cerr;
 using std::endl;
 
+template <typename T>
+class enumerator;
 template<typename T, typename Iter>
 class range_enumerator;
 template<typename T>
@@ -22,12 +25,37 @@ class where_enumerator;
 template<typename T>
 class take_enumerator;
 
+template <typename T>
+class enumerator_iterator : std::iterator<std::forward_iterator_tag, T> {
+public:
+  enumerator_iterator(enumerator<T> *enumi, bool to_begin) : enumi_(enumi), to_begin_(to_begin) {}
+  T operator*() {
+    return **enumi_;
+  }
+  enumerator_iterator<T>& operator++() {
+    ++*enumi_;
+    return *this;
+  }
+  bool operator!=(enumerator_iterator<T> &other) {  // other should be end
+    return to_begin_ ? static_cast<bool>(*enumi_) : (other != *this);
+  }
+private:
+  enumerator<T> *enumi_;
+  bool to_begin_;
+};
+
 template<typename T>
 class enumerator {
 public:
   virtual const T& operator*() = 0; // Получает текущий элемент.
   virtual enumerator<T>& operator++() = 0;  // Переход к следующему элементу
   virtual explicit operator bool() = 0; // Возвращает true, если есть текущий элемент
+  virtual enumerator_iterator<T> begin() {
+      return enumerator_iterator<T>(this, true);
+  }
+  virtual enumerator_iterator<T> end() {
+    return enumerator_iterator<T>(this, false);
+  }
 
   auto drop(int count) {
     return drop_enumerator<T>(*this, count);
@@ -94,7 +122,6 @@ public:
   virtual explicit operator bool() override {
     return begin_!= end_;
   }
-
 private:
   Iter begin_, end_;
 };
