@@ -65,7 +65,8 @@ void example3() {
 
   std::vector<double> res =
     from(xs, xs + 5)  // Взять элементы xs
-    .select<double>([](int x) { return sqrt(x); })  // Извлечь корень
+//    .select<double>([](int x) { return sqrt(x); });  // Извлечь корень
+    .select([](int x) { return sqrt(x); })  // Извлечь корень
     .to_vector();     // Преобразовать результат в вектор
 
   assert(res.size() == 5);
