@@ -8,7 +8,8 @@
 #include <iterator>
 #include <type_traits>
 
-enum enumerator_iterator_type { eit_begin, eit_end };
+enum class enumerator_iterator_type { begin, end };
+
 
 template <typename T>
 class enumerator;
@@ -39,9 +40,9 @@ public:
   bool operator!=(const enumerator_iterator<T> &other) const {
     if (enumi_ != other.enumi_)
       return true;
-    if (type_ == other.type_)
+    if (type_ == other.type_ || &other == this)
       return false;
-    return (type_ == eit_begin) ? static_cast<bool>(*enumi_) : (other != *this);
+    return (type_ == enumerator_iterator_type::begin) ? static_cast<bool>(*enumi_) : (other != *this);
   }
   enumerator<T> *enumi_;
   enumerator_iterator_type type_;
@@ -55,11 +56,11 @@ public:
   virtual explicit operator bool() = 0; // Возвращает true, если есть текущий элемент
 
   enumerator_iterator<T> begin() {
-      return enumerator_iterator<T>(this, eit_begin);
+      return enumerator_iterator<T>(this, enumerator_iterator_type::begin);
   }
 
   enumerator_iterator<T> end() {
-    return enumerator_iterator<T>(this, eit_end);
+    return enumerator_iterator<T>(this, enumerator_iterator_type::end);
   }
 
   auto drop(int count) {
