@@ -42,7 +42,9 @@ public:
       return true;
     if (type_ == other.type_ || &other == this)
       return false;
-    return (type_ == enumerator_iterator_type::begin) ? static_cast<bool>(*enumi_) : (other != *this);
+    if (type_ == enumerator_iterator_type::begin)
+        return static_cast<bool>(*enumi_);
+    return (other != *this);
   }
   enumerator<T> *enumi_;
   enumerator_iterator_type type_;
@@ -198,7 +200,7 @@ public:
     return *this;
   }
   virtual explicit operator bool() override {
-    return parent_ && is_valid_;
+    return is_valid_;
   }
 private:
   enumerator<T> &parent_;
@@ -214,7 +216,6 @@ public:
     advance();
   }
   virtual const T& operator*() override {
-    operator bool();
     return *parent_;
   }
   virtual enumerator<T>& operator++() override {
