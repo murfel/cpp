@@ -7,9 +7,10 @@
 #include <stdexcept>
 #include <iterator>
 #include <type_traits>
+#include <typeinfo>
+#include <typeindex>
 
 enum class enumerator_iterator_type { begin, end };
-
 
 template <typename T>
 class enumerator;
@@ -55,6 +56,8 @@ public:
 
 template<typename T>
 class enumerator {
+private:
+  struct default_output_type {};
 public:
   virtual const T& operator*() = 0; // Получает текущий элемент.
   virtual enumerator<T>& operator++() = 0;  // Переход к следующему элементу
@@ -72,9 +75,18 @@ public:
     return drop_enumerator<T>(*this, count);
   }
 
-  template<typename F, typename U = typename std::result_of<F&(T)>::type>
+  template<typename U = typename enumerator::default_output_type, typename F>
   auto select(F func) {
-    return select_enumerator<U, T, F>(*this, std::move(func));
+//    typedef U K;
+//    if (typeid(K) == typeid(enumerator::default_output_type))
+//      typedef typename std::result_of<F&(T)>::type K;
+//    return select_enumerator<K, T, F>(*this, std::move(func));
+
+    if (std::type_index(typeid(U)) == std::type_index(typeid(enumerator::default_output_type))) {
+      typedef typename std::result_of<F &(T)>::type K;
+      return select_enumerator<K, T, F>(*this, std::move(func));
+    }
+      return select_enumerator<U, T, F>(*this, std::move(func));
   }
 
   template<typename F>
