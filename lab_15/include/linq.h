@@ -29,22 +29,25 @@ class take_enumerator;
 template <typename T>
 class enumerator_iterator : std::iterator<std::forward_iterator_tag, T> {
 public:
-  enumerator_iterator(enumerator<T> *enumi, enumerator_iterator_type type) : enumi_(enumi), type_(type) {}
+  enumerator_iterator(enumerator<T> *enumi, enumerator_iterator_type type) : enumi_(enumi), type_(type) {
+    if (type_ == enumerator_iterator_type::begin && !*enumi_)
+       type_ = enumerator_iterator_type::end;
+  }
   T operator*() const {
     return **enumi_;
   }
   enumerator_iterator<T>& operator++() {
     ++*enumi_;
+    if (!*enumi_)
+      type_ = enumerator_iterator_type::end;
     return *this;
   }
   bool operator!=(const enumerator_iterator<T> &other) const {
+    if (&other == this)
+        return false;
     if (enumi_ != other.enumi_)
       return true;
-    if (type_ == other.type_ || &other == this)
-      return false;
-    if (type_ == enumerator_iterator_type::begin)
-        return static_cast<bool>(*enumi_);
-    return (other != *this);
+    return type_ != other.type_;
   }
   enumerator<T> *enumi_;
   enumerator_iterator_type type_;
@@ -69,9 +72,9 @@ public:
     return drop_enumerator<T>(*this, count);
   }
 
-  template<typename U = T, typename F>
+  template<typename F, typename U = typename std::result_of<F&(T)>::type>
   auto select(F func) {
-    return select_enumerator<typename std::result_of<F&(T)>::type, T, F>(*this, std::move(func));
+    return select_enumerator<U, T, F>(*this, std::move(func));
   }
 
   template<typename F>
