@@ -77,16 +77,30 @@ public:
 
   template<typename U = typename enumerator::default_output_type, typename F>
   auto select(F func) {
+    typedef U K;
+    typedef typename enumerator::default_output_type D;
+    if (std::is_same<U, D>::value)
+        typedef typename std::result_of<F&(T)>::type K;
+    return select_enumerator<K, T, F>(*this, std::move(func));
+
+//    typedef typename enumerator::default_output_type D;
+//    if (std::is_same<U, D>::value) {
+//      typedef typename std::result_of<F&(T)>::type K;
+//      return select_enumerator<K, T, F>(*this, std::move(func));
+//    }
+//      else
+//    return select_enumerator<U, T, F>(*this, std::move(func));
+
 //    typedef U K;
 //    if (typeid(K) == typeid(enumerator::default_output_type))
 //      typedef typename std::result_of<F&(T)>::type K;
 //    return select_enumerator<K, T, F>(*this, std::move(func));
 
-    if (std::type_index(typeid(U)) == std::type_index(typeid(enumerator::default_output_type))) {
-      typedef typename std::result_of<F &(T)>::type K;
-      return select_enumerator<K, T, F>(*this, std::move(func));
-    }
-      return select_enumerator<U, T, F>(*this, std::move(func));
+//    if (std::type_index(typeid(U)) == std::type_index(typeid(enumerator::default_output_type))) {
+//      typedef typename std::result_of<F &(T)>::type K;
+//      return select_enumerator<K, T, F>(*this, std::move(func));
+//    }
+//      return select_enumerator<U, T, F>(*this, std::move(func));
   }
 
   template<typename F>
