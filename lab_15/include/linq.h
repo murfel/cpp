@@ -76,17 +76,25 @@ public:
   }
 
   template<typename U = typename enumerator::default_output_type, typename F>
-  typename std::enable_if<!std::is_same<U, typename enumerator::default_output_type>::value, select_enumerator<U, T, F>>::type
-  select(F func) {
-    return select_enumerator<U, T, F>(*this, std::move(func));
-  }
-
-  template<typename U = typename enumerator::default_output_type, typename F>
-  typename std::enable_if<std::is_same<U, typename enumerator::default_output_type>::value, select_enumerator<typename std::result_of<F&(T)>::type, T, F>>::type
-  select(F func) {
-    typedef typename std::result_of<F&(T)>::type W;
+  auto select(F func) {
+    typedef typename enumerator::default_output_type D;
+    typedef typename std::result_of<F&(T)> R;
+    typedef typename std::conditional<std::is_same<U, D>::value, R, U>::type W;
     return select_enumerator<W, T, F>(*this, std::move(func));
   }
+
+//  template<typename U = typename enumerator::default_output_type, typename F>
+//  typename std::enable_if<!std::is_same<U, typename enumerator::default_output_type>::value, select_enumerator<U, T, F>>::type
+//  select(F func) {
+//    return select_enumerator<U, T, F>(*this, std::move(func));
+//  }
+//
+//  template<typename U = typename enumerator::default_output_type, typename F>
+//  typename std::enable_if<std::is_same<U, typename enumerator::default_output_type>::value, select_enumerator<typename std::result_of<F&(T)>::type, T, F>>::type
+//  select(F func) {
+//    typedef typename std::result_of<F&(T)>::type W;
+//    return select_enumerator<W, T, F>(*this, std::move(func));
+//  }
 
   template<typename F>
   auto until(F func) {
