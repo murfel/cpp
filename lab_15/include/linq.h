@@ -28,7 +28,7 @@ template<typename T>
 class take_enumerator;
 
 template <typename T>
-class enumerator_iterator : std::iterator<std::forward_iterator_tag, T> {
+class enumerator_iterator : public std::iterator<std::input_iterator_tag, T> {
 public:
   enumerator_iterator(enumerator<T> *enumi, enumerator_iterator_type type) : enumi_(enumi), type_(type) {
     if (type_ == enumerator_iterator_type::begin && !*enumi_)
