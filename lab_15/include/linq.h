@@ -77,7 +77,7 @@ public:
 
   template<typename U = typename enumerator::default_output_type, typename F>
   auto select(F func) {
-    typedef typename enumerator::default_output_type D;
+    typedef enumerator::default_output_type D;
     typedef typename std::result_of<F&(T)>::type R;
     typedef typename std::conditional<std::is_same<U, D>::value, R, U>::type W;
     return select_enumerator<W, T, F>(*this, std::move(func));
@@ -193,7 +193,7 @@ public:
 private:
   enumerator<U> &parent_;
   F func_;
-  typename std::result_of<F(U)>::type last_elem_;
+  T last_elem_;
 };
 
 template<typename T, typename F>
