@@ -16,7 +16,7 @@ template<typename T, typename Iter>
 class range_enumerator;
 template<typename T>
 class drop_enumerator;
-template<typename U, typename F>
+template<typename T, typename U, typename F>
 class select_enumerator;
 template<typename T, typename F>
 class until_enumerator;
@@ -66,9 +66,9 @@ public:
     return drop_enumerator<T>(*this, count);
   }
 
-  template<typename F>
+  template<typename U = T, typename F>
   auto select(F func) {
-    return select_enumerator<T, F>(*this, std::move(func));
+    return select_enumerator<typename std::result_of<F&(T)>::type, T, F>(*this, std::move(func));
   }
 
   template<typename F>
@@ -159,10 +159,8 @@ private:
   enumerator<T> &parent_;
 };
 
-template<typename U, typename F>  // U — входной тип
-
-class select_enumerator : public enumerator<typename std::result_of<F&(U)>::type> {
-typedef typename std::result_of<F&(U)>::type T;
+template<typename T, typename U, typename F>  // U — входной тип
+class select_enumerator : public enumerator<T> {
 public:
   select_enumerator(enumerator<U> &parent, F func) : parent_(parent), func_(std::move(func)) {
     if (parent_)
