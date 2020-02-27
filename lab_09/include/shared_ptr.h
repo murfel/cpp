@@ -4,7 +4,7 @@
 
 class shared_ptr {
   public:
-    shared_ptr(Matrix* obj = 0);
+    explicit shared_ptr(Matrix* obj = 0);
     shared_ptr(const shared_ptr& other);
     shared_ptr& operator=(shared_ptr other);
     ~shared_ptr();
@@ -30,7 +30,7 @@ class shared_ptr {
 
       private:
         Matrix *data_;
-        int ref_count_;
+        int ref_count_; //atomic
     };
 
   private:

@@ -9,7 +9,7 @@ shared_ptr::shared_ptr(const shared_ptr& other) {
   storage_->incr();
 }
 
-shared_ptr& shared_ptr::operator=(shared_ptr other) {
+shared_ptr& shared_ptr::operator=(const shared_ptr& other) {
   if (this->storage_->getObject() == other.storage_->getObject()) {
     return *this;
   }
